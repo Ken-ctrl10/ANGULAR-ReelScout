@@ -1,0 +1,9 @@
+# Local Claude/editor config
+.claude/
+
+# Personal meeting notes
+DEMO-NOTES.md
+
+# OS files
+.DS_Store
+Thumbs.db

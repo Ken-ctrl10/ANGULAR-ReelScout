@@ -1,0 +1,57 @@
+<button type="button" class="back" (click)="back()">← Back</button>
+
+@if (loading()) {
+  <div class="detail">
+    <div class="detail-poster skeleton"></div>
+    <div class="detail-info">
+      <div class="skeleton line wide"></div>
+      <div class="skeleton line"></div>
+      <div class="skeleton line"></div>
+    </div>
+  </div>
+} @else if (error()) {
+  <div class="state error"><p>{{ error() }}</p></div>
+} @else if (movie(); as m) {
+  @if (m.backdrop_path | poster: 'w1280'; as backdrop) {
+    <div class="backdrop" [style.background-image]="'url(' + backdrop + ')'"></div>
+  }
+  <article class="detail">
+    @if (m.poster_path | poster: 'w500'; as src) {
+      <img class="detail-poster" [src]="src" [alt]="m.title + ' poster'" />
+    } @else {
+      <div class="detail-poster no-poster">{{ m.title }}</div>
+    }
+
+    <div class="detail-info">
+      <h1>{{ m.title }} @if (m.release_date) {<span class="year">({{ m.release_date.slice(0, 4) }})</span>}</h1>
+      @if (m.tagline) {
+        <p class="tagline">{{ m.tagline }}</p>
+      }
+      <p class="meta">
+        <span class="rating">★ {{ m.vote_average.toFixed(1) }}</span>
+        @if (m.runtime) {<span>{{ runtime(m.runtime) }}</span>}
+        @if (m.release_date) {<span>{{ m.release_date }}</span>}
+      </p>
+      <div class="genres">
+        @for (g of m.genres; track g.id) {
+          <span class="chip">{{ g.name }}</span>
+        }
+      </div>
+
+      <h2>Overview</h2>
+      <p>{{ m.overview || 'No overview available.' }}</p>
+
+      @if (topCast().length) {
+        <h2>Top cast</h2>
+        <ul class="cast">
+          @for (c of topCast(); track c.id) {
+            <li>
+              <strong>{{ c.name }}</strong>
+              <span>{{ c.character }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </article>
+}

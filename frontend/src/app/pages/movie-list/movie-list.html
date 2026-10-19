@@ -1,0 +1,53 @@
+<section class="toolbar">
+  <h1>{{ query().trim() ? 'Search results' : 'Popular movies' }}</h1>
+  <input
+    class="search"
+    type="search"
+    placeholder="Search movies..."
+    aria-label="Search movies"
+    [value]="query()" 
+    (input)="onSearch($event)"
+  />
+</section>
+
+@if (error()) {
+  <div class="state error">
+    <p>{{ error() }}</p>
+    <button type="button" (click)="retry()">Try again</button>
+  </div>
+} @else if (loading() && !result()) {
+  <div class="grid">
+    @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+      <div class="card skeleton"></div>
+    }
+  </div>
+} @else if (result(); as res) {
+  @if (res.results.length === 0) {
+    <p class="state">No movies found for "{{ query() }}".</p>
+  } @else {
+    <div class="grid" [class.dim]="loading()">
+      @for (movie of res.results; track movie.id) {
+        <a class="card" [routerLink]="['/movie', movie.id]">
+          @if (movie.poster_path | poster; as src) {
+            <img [src]="src" [alt]="movie.title + ' poster'" loading="lazy" />
+          } @else {
+            <div class="no-poster">{{ movie.title }}</div>
+          }
+          <div class="card-body">
+            <h2>{{ movie.title }}</h2>
+            <p class="meta">
+              <span>{{ movie.release_date ? movie.release_date.slice(0, 4) : '—' }}</span>
+              <span class="rating">★ {{ movie.vote_average.toFixed(1) }}</span>
+            </p>
+          </div>
+        </a>
+      }
+    </div>
+
+    <nav class="pager" aria-label="Pagination">
+      <button type="button" [disabled]="res.page <= 1 || loading()" (click)="goToPage(res.page - 1)">← Prev</button>
+      <span>Page {{ res.page }} of {{ res.total_pages > 500 ? 500 : res.total_pages }}</span>
+      <button type="button" [disabled]="res.page >= res.total_pages || res.page >= 500 || loading()" (click)="goToPage(res.page + 1)">Next →</button>
+    </nav>
+  }
+}

@@ -1,0 +1,602 @@
+{
+  "info": {
+    "name": "Reel Scout API",
+    "description": "Tests for the Laravel API that proxies TMDB. Start the backend first: cd backend && php artisan serve",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "frontendOrigin",
+      "value": "http://localhost:4200"
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Response is JSON', () => {",
+          "    pm.response.to.have.header('Content-Type');",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "pm.test('Response time under 5s', () => {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Movies - happy path",
+      "item": [
+        {
+          "name": "1. Get popular movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/popular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "popular"
+              ]
+            },
+            "description": "Gets the current popular movies from TMDB (20 per page, page 1). This is what the home page shows."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Page 1 with a results array', () => {",
+                  "    pm.expect(json.page).to.eql(1);",
+                  "    pm.expect(json.results).to.be.an('array').that.is.not.empty;",
+                  "});",
+                  "pm.test('Each movie has id and title', () => {",
+                  "    json.results.forEach(m => {",
+                  "        pm.expect(m).to.have.property('id');",
+                  "        pm.expect(m).to.have.property('title');",
+                  "    });",
+                  "});",
+                  "// Save the first movie id for the details request",
+                  "pm.collectionVariables.set('firstMovieId', json.results[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Get popular movies - page 2",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/popular?page=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "popular"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Gets the next 20 popular movies. Used by the Next button on the home page."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns page 2', () => pm.expect(pm.response.json().page).to.eql(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Search movies by title",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/search?q=inception",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "inception"
+                }
+              ]
+            },
+            "description": "Searches movies by title using the q parameter. This is what the search box calls."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Finds Inception', () => {",
+                  "    const titles = json.results.map(m => m.title);",
+                  "    pm.expect(titles).to.include('Inception');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Get movie details (Inception)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/27205",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "27205"
+              ]
+            },
+            "description": "Gets full details of one movie by its TMDB id: overview, genres, runtime, rating, and cast. This is what the detail page shows."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Title is Inception', () => pm.expect(json.title).to.eql('Inception'));",
+                  "pm.test('Has genres and runtime', () => {",
+                  "    pm.expect(json.genres).to.be.an('array').that.is.not.empty;",
+                  "    pm.expect(json.runtime).to.be.above(0);",
+                  "});",
+                  "pm.test('Includes cast (credits)', () => {",
+                  "    pm.expect(json.credits.cast).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Get movie details (first popular movie)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{firstMovieId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{firstMovieId}}"
+              ]
+            },
+            "description": "Same as the details request, but uses the id saved from 'Get popular movies'. Shows requests can be chained."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Id matches the saved popular movie', () => {",
+                  "    pm.expect(String(pm.response.json().id)).to.eql(String(pm.collectionVariables.get('firstMovieId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Movies - errors and validation",
+      "item": [
+        {
+          "name": "6. Search without a title - expect 422",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "search"
+              ]
+            },
+            "description": "Checks validation: searching with no q is rejected with 422 and a clear error."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 422 (validation error)', () => pm.response.to.have.status(422));",
+                  "pm.test('Error mentions q', () => pm.expect(pm.response.json().errors).to.have.property('q'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Search with a too-long title - expect 422",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/search?q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            },
+            "description": "Checks validation: search text over 100 characters is rejected with 422."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 422 (too long)', () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "8. Search with no matches - expect empty list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/search?q=zzqqxxnotamovie123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "zzqqxxnotamovie123"
+                }
+              ]
+            },
+            "description": "Checks that a search with no results returns 200 and an empty list, not an error."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Empty results array', () => pm.expect(pm.response.json().results).to.be.an('array').that.is.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "9. Get a movie that does not exist - expect 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/999999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "999999999"
+              ]
+            },
+            "description": "Checks that an unknown movie id returns 404 'Movie not found.'"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Friendly message', () => pm.expect(pm.response.json().message).to.eql('Movie not found.'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Get a movie with an invalid id - expect 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "abc"
+              ]
+            },
+            "description": "Checks that a non-numeric id is rejected by the route with 404, without calling TMDB."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Security and performance",
+      "item": [
+        {
+          "name": "11. CORS - Angular app is allowed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "{{frontendOrigin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/popular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "popular"
+              ]
+            },
+            "description": "Checks that the API allows requests from the Angular app (localhost:4200)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Allows the Angular origin', () => {",
+                  "    pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.eql(pm.collectionVariables.get('frontendOrigin'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. CORS - other websites are blocked",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Origin",
+                "value": "http://evil.example.com"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/popular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "popular"
+              ]
+            },
+            "description": "Checks that the API does not allow other websites. Postman ignores CORS, so this checks the header a browser would enforce."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('No allow header for unknown origin', () => {",
+                  "    pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.not.eql('http://evil.example.com');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. Security - TMDB token is never exposed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/27205",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "27205"
+              ]
+            },
+            "description": "Checks that no response contains the TMDB token. The token stays on the server."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response does not contain a bearer token', () => {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body).to.not.match(/eyJ[A-Za-z0-9_-]{20,}\\./);",
+                  "    pm.expect(body.toLowerCase()).to.not.include('bearer');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14. Performance - cached response is fast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/popular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "popular"
+              ]
+            },
+            "description": "Calls popular movies again. Laravel serves it from cache instead of calling TMDB, so it should be under 1 second."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Served quickly from cache (under 1s)', () => pm.expect(pm.response.responseTime).to.be.below(1000));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
