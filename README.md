@@ -28,7 +28,12 @@ Angular never calls TMDB directly. Laravel keeps the TMDB token in `backend/.env
 
 ## Setup
 
-Requirements: PHP 8.2+, Composer, Node 24.12+ (or 22.12+).
+Requirements: PHP 8.3+, Composer, Node 20.19+, 22.12+ or 24+.
+
+```bash
+git clone https://github.com/Ken-ctrl10/ANGULAR-ReelScout.git
+cd ANGULAR-ReelScout
+```
 
 ### Backend
 
@@ -37,6 +42,7 @@ cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
+touch database/database.sqlite
 php artisan migrate
 ```
 
