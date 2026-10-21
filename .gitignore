@@ -2,7 +2,7 @@
 .claude/
 
 # Personal meeting notes
-DEMO-NOTES.md
+DEMO-NOTES*.md
 
 # OS files
 .DS_Store
