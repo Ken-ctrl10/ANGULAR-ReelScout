@@ -1,5 +1,15 @@
 <header class="site-header">
   <a routerLink="/" class="brand">🎬 Reel Scout</a>
+
+  <nav class="header-nav">
+    @if (auth.user(); as user) {
+      <span class="greeting">Hi, {{ user.name }}</span>
+      <button type="button" class="link-button" (click)="logout()">Log out</button>
+    } @else {
+      <a routerLink="/login">Log in</a>
+      <a routerLink="/register" class="nav-cta">Sign up</a>
+    }
+  </nav>
 </header>
 
 <main class="container">

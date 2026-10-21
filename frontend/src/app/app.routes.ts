@@ -12,5 +12,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/movie-detail/movie-detail').then((m) => m.MovieDetail),
     title: 'Movie details · Reel Scout',
   },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
+    title: 'Log in · Reel Scout',
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register').then((m) => m.Register),
+    title: 'Create account · Reel Scout',
+  },
   { path: '**', redirectTo: '' },
 ];

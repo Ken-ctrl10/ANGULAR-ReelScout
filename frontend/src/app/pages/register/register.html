@@ -1,0 +1,48 @@
+<section class="auth-card">
+  <h1>Create an account</h1>
+  <p class="muted">Sign up to save your favorite movies.</p>
+
+  @if (error()) {
+    <p class="form-error" role="alert">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label for="name">Name</label>
+    <input id="name" type="text" formControlName="name" autocomplete="name" />
+    @if (showError('name')) {
+      <small class="field-error">Name is required.</small>
+    } @else if (serverErrors()['name']) {
+      <small class="field-error">{{ serverErrors()['name'] }}</small>
+    }
+
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" autocomplete="email" />
+    @if (showError('email')) {
+      <small class="field-error">Enter a valid email.</small>
+    } @else if (serverErrors()['email']) {
+      <small class="field-error">{{ serverErrors()['email'] }}</small>
+    }
+
+    <label for="password">Password</label>
+    <input id="password" type="password" formControlName="password" autocomplete="new-password" />
+    @if (showError('password')) {
+      <small class="field-error">At least 8 characters.</small>
+    } @else if (serverErrors()['password']) {
+      <small class="field-error">{{ serverErrors()['password'] }}</small>
+    }
+
+    <label for="password_confirmation">Confirm password</label>
+    <input id="password_confirmation" type="password" formControlName="password_confirmation" autocomplete="new-password" />
+    @if (showError('password_confirmation')) {
+      <small class="field-error">Please confirm your password.</small>
+    } @else if (showMismatch()) {
+      <small class="field-error">Passwords don't match.</small>
+    }
+
+    <button type="submit" class="primary" [disabled]="submitting()">
+      {{ submitting() ? 'Creating account...' : 'Create account' }}
+    </button>
+  </form>
+
+  <p class="muted switch">Already have an account? <a routerLink="/login">Log in</a></p>
+</section>

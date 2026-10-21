@@ -14,7 +14,7 @@ Angular never calls TMDB directly. Laravel keeps the TMDB token in `backend/.env
 |---|---|
 | 1. Laravel API (TMDB proxy, caching, error handling, CORS) | Done |
 | 2. Angular browsing (popular grid, debounced search, detail page, loading/error states) | Done |
-| 3. Accounts and favorites (Sanctum, MySQL) | Next |
+| 3. Accounts and favorites (Sanctum, MySQL) | In progress. Done: auth and favorites API, Angular login/register, token interceptor. Next: favorites UI, route guard, switch to MySQL |
 | 4. Polish | Partly done (responsive layout, TMDB attribution). Planned: movie trailer (YouTube) and cast photos on the detail page, automated tests |
 | 5. Cloud hosting | Not started |
 
@@ -25,6 +25,20 @@ Angular never calls TMDB directly. Laravel keeps the TMDB token in `backend/.env
 | `GET /api/movies/popular?page=1` | Popular movies |
 | `GET /api/movies/search?q=batman&page=1` | Search |
 | `GET /api/movies/{id}` | Details with cast |
+| `POST /api/register` | Create an account (`name`, `email`, `password`, `password_confirmation`); returns user and token |
+| `POST /api/login` | Log in (`email`, `password`); returns user and token |
+
+These need `Authorization: Bearer <token>`:
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/user` | The logged-in user |
+| `POST /api/logout` | Revoke the current token |
+| `GET /api/favorites` | My favorites, newest first |
+| `POST /api/favorites` | Add a favorite (`tmdb_id`, `title`, `poster_path`); adding twice doesn't duplicate |
+| `DELETE /api/favorites/{tmdbId}` | Remove a favorite |
+
+Register and login are limited to 10 attempts per minute.
 
 ## Setup
 
@@ -74,6 +88,12 @@ Open http://localhost:4200.
 - `frontend/src/app/core/movie.service.ts`: Angular `HttpClient` calls to the API
 - `frontend/src/app/pages/movie-list/`: popular grid, debounced search, pagination
 - `frontend/src/app/pages/movie-detail/`: lazy-loaded detail page
+- `backend/app/Http/Controllers/AuthController.php`: register, login, logout, current user (Sanctum tokens)
+- `backend/app/Http/Controllers/FavoriteController.php`: list, add, remove favorites for the logged-in user
+- `backend/app/Models/Favorite.php` and the `favorites` migration: one row per user and movie (unique pair)
+- `frontend/src/app/core/auth.service.ts`: login state as signals, token saved in localStorage
+- `frontend/src/app/core/auth.interceptor.ts`: adds the Bearer token to API calls, logs out on 401
+- `frontend/src/app/pages/login/`, `pages/register/`: reactive forms with client and server validation
 
 ---
 
