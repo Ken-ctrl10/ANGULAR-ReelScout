@@ -6,11 +6,12 @@ import { catchError, of, switchMap, tap } from 'rxjs';
 import { errorMessage } from '../../core/error-message';
 import { MovieDetails } from '../../core/movie.model';
 import { MovieService } from '../../core/movie.service';
+import { FavoriteButton } from '../../shared/favorite-button';
 import { PosterPipe } from '../../shared/poster.pipe';
 
 @Component({
   selector: 'app-movie-detail',
-  imports: [PosterPipe],
+  imports: [PosterPipe, FavoriteButton],
   templateUrl: './movie-detail.html',
 })
 export class MovieDetail {

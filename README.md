@@ -14,7 +14,7 @@ Angular never calls TMDB directly. Laravel keeps the TMDB token in `backend/.env
 |---|---|
 | 1. Laravel API (TMDB proxy, caching, error handling, CORS) | Done |
 | 2. Angular browsing (popular grid, debounced search, detail page, loading/error states) | Done |
-| 3. Accounts and favorites (Sanctum, MySQL) | In progress. Done: auth and favorites API, Angular login/register, token interceptor. Next: favorites UI, route guard, switch to MySQL |
+| 3. Accounts and favorites (Sanctum, MySQL) | Done: auth and favorites API on MySQL, login/register, token interceptor, favorite button, My Favorites page, route guards |
 | 4. Polish | Partly done (responsive layout, TMDB attribution). Planned: movie trailer (YouTube) and cast photos on the detail page, automated tests |
 | 5. Cloud hosting | Not started |
 
@@ -42,11 +42,19 @@ Register and login are limited to 10 attempts per minute.
 
 ## Setup
 
-Requirements: PHP 8.3+, Composer, Node 20.19+, 22.12+ or 24+.
+Requirements: PHP 8.3+ (with `pdo_mysql`), Composer, MySQL 8, Node 20.19+, 22.12+ or 24+.
 
 ```bash
 git clone https://github.com/Ken-ctrl10/ANGULAR-ReelScout.git
 cd ANGULAR-ReelScout
+```
+
+### Database (MySQL)
+
+Create the database (for example in MySQL Workbench):
+
+```sql
+CREATE DATABASE movie_browser;
 ```
 
 ### Backend
@@ -56,17 +64,20 @@ cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
-touch database/database.sqlite
-php artisan migrate
 ```
 
-Put your TMDB **API Read Access Token** (themoviedb.org > Settings > API) in `backend/.env`:
+In `backend/.env`, set your MySQL password and your TMDB **API Read Access Token** (themoviedb.org > Settings > API):
 
 ```
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
 TMDB_TOKEN=your_token_here
 ```
 
+Create the tables and start the API:
+
 ```bash
+php artisan migrate
 php artisan serve
 ```
 
@@ -94,6 +105,10 @@ Open http://localhost:4200.
 - `frontend/src/app/core/auth.service.ts`: login state as signals, token saved in localStorage
 - `frontend/src/app/core/auth.interceptor.ts`: adds the Bearer token to API calls, logs out on 401
 - `frontend/src/app/pages/login/`, `pages/register/`: reactive forms with client and server validation
+- `frontend/src/app/core/favorites.service.ts`: favorites as signals, loads on login and clears on logout
+- `frontend/src/app/core/auth.guard.ts`: `authGuard` (logged-in only, e.g. `/favorites`) and `guestGuard` (login/register)
+- `frontend/src/app/shared/favorite-button.ts`: reusable add/remove favorite button
+- `frontend/src/app/pages/favorites/`: My Favorites page
 
 ---
 

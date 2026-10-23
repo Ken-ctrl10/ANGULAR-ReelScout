@@ -3,6 +3,12 @@
 
   <nav class="header-nav">
     @if (auth.user(); as user) {
+      <a routerLink="/favorites" routerLinkActive="active-link">
+        ♥ Favorites
+        @if (favorites.count()) {
+          <span class="badge">{{ favorites.count() }}</span>
+        }
+      </a>
       <span class="greeting">Hi, {{ user.name }}</span>
       <button type="button" class="link-button" (click)="logout()">Log out</button>
     } @else {

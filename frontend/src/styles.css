@@ -109,6 +109,35 @@ button.primary {
 }
 button.primary:hover:not(:disabled) { filter: brightness(1.1); }
 
+/* Favorites */
+.active-link { color: var(--accent); }
+.badge {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 4px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  line-height: 20px;
+  text-align: center;
+  color: #0d253f;
+  background: var(--accent);
+  border-radius: 999px;
+}
+.detail-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 18px; }
+.fav-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; font-weight: 600; }
+.fav-button span { font-size: 1.15rem; line-height: 1; }
+.fav-button.active { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255, 77, 109, 0.1); }
+.card-body h2 a:hover { color: var(--accent); }
+.remove-button { margin-top: 8px; width: 100%; padding: 6px 10px; font-size: 0.85rem; }
+.remove-button:hover:not(:disabled) { border-color: var(--danger) !important; color: var(--danger); }
+.empty-favorites { grid-column: 1 / -1; }
+.empty-favorites .nav-cta { display: inline-block; margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .header-nav { gap: 10px; font-size: 0.85rem; }
+  .greeting { display: none; }
+}
+
 .container {
   flex: 1;
   width: 100%;

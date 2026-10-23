@@ -1,0 +1,53 @@
+<section class="toolbar">
+  <h1>My favorites</h1>
+  @if (favorites.count()) {
+    <span class="muted">{{ favorites.count() }} {{ favorites.count() === 1 ? 'movie' : 'movies' }}</span>
+  }
+</section>
+
+@if (removeError()) {
+  <p class="form-error" role="alert">{{ removeError() }}</p>
+}
+
+@if (favorites.error()) {
+  <div class="state error">
+    <p>{{ favorites.error() }}</p>
+    <button type="button" (click)="favorites.load()">Try again</button>
+  </div>
+} @else if (favorites.loading() && !favorites.count()) {
+  <div class="grid">
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <div class="card skeleton"></div>
+    }
+  </div>
+} @else {
+  <div class="grid">
+    @for (fav of favorites.favorites(); track fav.tmdb_id) {
+      <div class="card">
+        <a [routerLink]="['/movie', fav.tmdb_id]">
+          @if (fav.poster_path | poster; as src) {
+            <img [src]="src" [alt]="fav.title + ' poster'" loading="lazy" />
+          } @else {
+            <div class="no-poster">{{ fav.title }}</div>
+          }
+        </a>
+        <div class="card-body">
+          <h2><a [routerLink]="['/movie', fav.tmdb_id]">{{ fav.title }}</a></h2>
+          <button
+            type="button"
+            class="remove-button"
+            [disabled]="removingId() === fav.tmdb_id"
+            (click)="remove(fav.tmdb_id)"
+          >
+            {{ removingId() === fav.tmdb_id ? 'Removing...' : 'Remove' }}
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="state empty-favorites">
+        <p>You haven't saved any movies yet.</p>
+        <a routerLink="/" class="nav-cta">Browse movies</a>
+      </div>
+    }
+  </div>
+}

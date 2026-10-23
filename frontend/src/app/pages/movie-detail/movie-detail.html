@@ -38,6 +38,10 @@
         }
       </div>
 
+      <div class="detail-actions">
+        <app-favorite-button [movie]="m" />
+      </div>
+
       <h2>Overview</h2>
       <p>{{ m.overview || 'No overview available.' }}</p>
 
