@@ -24,7 +24,7 @@ class RecommendationController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $recent = $user->favorites()->latest()->take(self::BASED_ON)->get(['tmdb_id', 'title']);
+        $recent = $user->favorites()->latest()->latest('id')->take(self::BASED_ON)->get(['tmdb_id', 'title']);
 
         if ($recent->isEmpty()) {
             return response()->json(['based_on' => [], 'results' => []]);

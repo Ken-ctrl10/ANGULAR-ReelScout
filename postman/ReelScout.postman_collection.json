@@ -454,10 +454,364 @@
       ]
     },
     {
+      "name": "Home page and browse (Phase 4)",
+      "item": [
+        {
+          "name": "11. Home row - trending this week",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/list/trending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "list",
+                "trending"
+              ]
+            },
+            "description": "Movies for the home page hero and Trending row."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has 20 movies', () => pm.expect(pm.response.json().results).to.be.an('array').with.lengthOf(20));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. Home row - now playing",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/list/now-playing",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "list",
+                "now-playing"
+              ]
+            },
+            "description": "Movies in cinemas now."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has 20 movies', () => pm.expect(pm.response.json().results).to.be.an('array').with.lengthOf(20));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. Home row - coming soon",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/list/upcoming",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "list",
+                "upcoming"
+              ]
+            },
+            "description": "Upcoming movies."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has 20 movies', () => pm.expect(pm.response.json().results).to.be.an('array').with.lengthOf(20));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14. Home row - top rated",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/list/top-rated",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "list",
+                "top-rated"
+              ]
+            },
+            "description": "Highest rated movies."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has 20 movies', () => pm.expect(pm.response.json().results).to.be.an('array').with.lengthOf(20));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15. Unknown home row - expect 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/list/bogus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "list",
+                "bogus"
+              ]
+            },
+            "description": "Only the known categories are allowed."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16. Get genres",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/genres",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres"
+              ]
+            },
+            "description": "Genre list for the Browse filters."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Includes Action (28)', () => pm.expect(pm.response.json().find(g => g.id === 28).name).to.eql('Action'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17. Browse with filters (Action, 2010, 7+, highest rated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/discover?genre=28&year=2010&min_rating=7&sort=vote_average.desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "discover"
+              ],
+              "query": [
+                {
+                  "key": "genre",
+                  "value": "28"
+                },
+                {
+                  "key": "year",
+                  "value": "2010"
+                },
+                {
+                  "key": "min_rating",
+                  "value": "7"
+                },
+                {
+                  "key": "sort",
+                  "value": "vote_average.desc"
+                }
+              ]
+            },
+            "description": "Browse page filters: genre, year, minimum rating and sort."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Finds Inception', () => pm.expect(pm.response.json().results.map(m => m.title)).to.include('Inception'));",
+                  "pm.test('All results are rated 7+', () => pm.response.json().results.forEach(m => pm.expect(m.vote_average).to.be.at.least(7)));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "18. Browse with invalid filters - expect 422",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/discover?sort=bad&year=1800",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "discover"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "bad"
+                },
+                {
+                  "key": "year",
+                  "value": "1800"
+                }
+              ]
+            },
+            "description": "Invalid sort and year are rejected."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 422', () => pm.response.to.have.status(422));",
+                  "pm.test('Errors on sort and year', () => { const e = pm.response.json().errors; pm.expect(e).to.have.property('sort'); pm.expect(e).to.have.property('year'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "19. Movie details include a trailer and cast photos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/27205",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "27205"
+              ]
+            },
+            "description": "The detail page uses videos (trailer) and cast profile photos."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has a YouTube trailer', () => pm.expect(json.videos.results.some(v => v.site === 'YouTube' && v.type === 'Trailer')).to.be.true);",
+                  "pm.test('Cast has photos', () => pm.expect(json.credits.cast[0].profile_path).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Security and performance",
       "item": [
         {
-          "name": "11. CORS - Angular app is allowed",
+          "name": "20. CORS - Angular app is allowed",
           "request": {
             "method": "GET",
             "header": [
@@ -497,7 +851,7 @@
           ]
         },
         {
-          "name": "12. CORS - other websites are blocked",
+          "name": "21. CORS - other websites are blocked",
           "request": {
             "method": "GET",
             "header": [
@@ -537,7 +891,7 @@
           ]
         },
         {
-          "name": "13. Security - TMDB token is never exposed",
+          "name": "22. Security - TMDB token is never exposed",
           "request": {
             "method": "GET",
             "header": [
@@ -575,7 +929,7 @@
           ]
         },
         {
-          "name": "14. Performance - cached response is fast",
+          "name": "23. Performance - cached response is fast",
           "request": {
             "method": "GET",
             "header": [
@@ -615,7 +969,7 @@
       "name": "Auth and favorites",
       "item": [
         {
-          "name": "15. Register a new user",
+          "name": "24. Register a new user",
           "request": {
             "method": "POST",
             "header": [
@@ -674,7 +1028,7 @@
           ]
         },
         {
-          "name": "16. Register with an email already used - expect 422",
+          "name": "25. Register with an email already used - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -716,7 +1070,7 @@
           ]
         },
         {
-          "name": "17. Register with mismatched passwords - expect 422",
+          "name": "26. Register with mismatched passwords - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -758,7 +1112,7 @@
           ]
         },
         {
-          "name": "18. Login with a wrong password - expect 422",
+          "name": "27. Login with a wrong password - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -800,7 +1154,7 @@
           ]
         },
         {
-          "name": "19. Login",
+          "name": "28. Login",
           "request": {
             "method": "POST",
             "header": [
@@ -844,7 +1198,7 @@
           ]
         },
         {
-          "name": "20. Get the logged-in user",
+          "name": "29. Get the logged-in user",
           "request": {
             "method": "GET",
             "header": [
@@ -882,7 +1236,7 @@
           ]
         },
         {
-          "name": "21. Get favorites without a token - expect 401",
+          "name": "30. Get favorites without a token - expect 401",
           "request": {
             "method": "GET",
             "header": [
@@ -916,7 +1270,7 @@
           ]
         },
         {
-          "name": "22. Add a favorite (Inception)",
+          "name": "31. Add a favorite (Inception)",
           "request": {
             "method": "POST",
             "header": [
@@ -962,7 +1316,7 @@
           ]
         },
         {
-          "name": "23. Add the same favorite again - no duplicate",
+          "name": "32. Add the same favorite again - no duplicate",
           "request": {
             "method": "POST",
             "header": [
@@ -1007,7 +1361,7 @@
           ]
         },
         {
-          "name": "24. Add a favorite with missing fields - expect 422",
+          "name": "33. Add a favorite with missing fields - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -1057,7 +1411,7 @@
           ]
         },
         {
-          "name": "25. List my favorites",
+          "name": "34. List my favorites",
           "request": {
             "method": "GET",
             "header": [
@@ -1097,7 +1451,224 @@
           ]
         },
         {
-          "name": "26. Remove a favorite",
+          "name": "35. Update watchlist fields (watched, 5 stars, note)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favorites/27205",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "27205"
+              ]
+            },
+            "description": "My list: status, own rating and note.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"watched\",\n  \"rating\": 5,\n  \"note\": \"Mind-bending!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const f = pm.response.json();",
+                  "pm.test('Saved', () => { pm.expect(f.status).to.eql('watched'); pm.expect(f.rating).to.eql(5); pm.expect(f.note).to.eql('Mind-bending!'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "36. Update watchlist with invalid values - expect 422",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favorites/27205",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "27205"
+              ]
+            },
+            "description": "Status must be want_to_watch or watched; rating 1 to 5.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"maybe\",\n  \"rating\": 9\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 422', () => pm.response.to.have.status(422));",
+                  "pm.test('Errors on status and rating', () => { const e = pm.response.json().errors; pm.expect(e).to.have.property('status'); pm.expect(e).to.have.property('rating'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "37. Update a movie not in my list - expect 404",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/favorites/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "favorites",
+                "999"
+              ]
+            },
+            "description": "Users can only update their own saved movies.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"watched\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Clean message', () => pm.expect(pm.response.json().message).to.eql('This movie is not in your list.'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "38. Get recommendations (Because you liked...)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recommendations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recommendations"
+              ]
+            },
+            "description": "Recommendations from the user's recent favorites, without saved movies."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Based on Inception', () => pm.expect(json.based_on.map(b => b.title)).to.include('Inception'));",
+                  "pm.test('Has recommendations', () => pm.expect(json.results.length).to.be.above(0));",
+                  "pm.test('Does not include saved movies', () => pm.expect(json.results.map(m => m.id)).to.not.include(27205));",
+                  "pm.test('No duplicates', () => { const ids = json.results.map(m => m.id); pm.expect(new Set(ids).size).to.eql(ids.length); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "39. Get recommendations without a token - expect 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recommendations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "recommendations"
+              ]
+            },
+            "description": "Logged-in only."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "40. Remove a favorite",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1135,7 +1706,7 @@
           ]
         },
         {
-          "name": "27. List favorites after removing - expect empty",
+          "name": "41. List favorites after removing - expect empty",
           "request": {
             "method": "GET",
             "header": [
@@ -1173,7 +1744,7 @@
           ]
         },
         {
-          "name": "28. Logout",
+          "name": "42. Logout",
           "request": {
             "method": "POST",
             "header": [
@@ -1210,7 +1781,7 @@
           ]
         },
         {
-          "name": "29. Use the old token after logout - expect 401",
+          "name": "43. Use the old token after logout - expect 401",
           "request": {
             "method": "GET",
             "header": [

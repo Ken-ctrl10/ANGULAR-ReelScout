@@ -16,7 +16,8 @@ class FavoriteController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        return response()->json($request->user()->favorites()->latest()->get());
+        // Newest first; id breaks ties when two were saved in the same second.
+        return response()->json($request->user()->favorites()->latest()->latest('id')->get());
     }
 
     public function store(Request $request): JsonResponse
