@@ -13,11 +13,39 @@ use RuntimeException;
  */
 class TmdbService
 {
+    /**
+     * Home page rows: our category name => TMDB path.
+     */
+    public const LISTS = [
+        'trending' => '/trending/movie/week',
+        'now-playing' => '/movie/now_playing',
+        'upcoming' => '/movie/upcoming',
+        'top-rated' => '/movie/top_rated',
+        'popular' => '/movie/popular',
+    ];
+
+    /**
+     * Sort options allowed on the Browse page (TMDB discover sort_by values).
+     */
+    public const SORTS = [
+        'popularity.desc',
+        'vote_average.desc',
+        'primary_release_date.desc',
+        'revenue.desc',
+    ];
+
     public function popular(int $page = 1): array
     {
-        // Popular lists change slowly, so cache them to save TMDB calls.
-        return Cache::remember("tmdb.popular.$page", now()->addMinutes(30), fn () =>
-            $this->get('/movie/popular', ['page' => $page])
+        return $this->list('popular', $page);
+    }
+
+    public function list(string $category, int $page = 1): array
+    {
+        $path = self::LISTS[$category] ?? throw new RuntimeException('Unknown list', 404);
+
+        // Lists change slowly, so cache them to save TMDB calls.
+        return Cache::remember("tmdb.list.$category.$page", now()->addMinutes(30), fn () =>
+            $this->get($path, ['page' => $page])
         );
     }
 
@@ -30,10 +58,50 @@ class TmdbService
         );
     }
 
+    /**
+     * Browse with filters. $filters keys: genre, year, min_rating, sort.
+     */
+    public function discover(array $filters, int $page = 1): array
+    {
+        $query = array_filter([
+            'with_genres' => $filters['genre'] ?? null,
+            'primary_release_year' => $filters['year'] ?? null,
+            'vote_average.gte' => $filters['min_rating'] ?? null,
+            'sort_by' => $filters['sort'] ?? 'popularity.desc',
+        ], fn ($value) => $value !== null && $value !== '');
+
+        // Rating sorts need a minimum number of votes, or obscure 10/10 movies with 1 vote win.
+        if (str_starts_with($query['sort_by'], 'vote_average') || isset($query['vote_average.gte'])) {
+            $query['vote_count.gte'] = 200;
+        }
+
+        $query += ['page' => $page, 'include_adult' => 'false'];
+        ksort($query);
+
+        return Cache::remember('tmdb.discover.'.md5(http_build_query($query)), now()->addMinutes(30), fn () =>
+            $this->get('/discover/movie', $query)
+        );
+    }
+
+    public function genres(): array
+    {
+        return Cache::remember('tmdb.genres', now()->addDay(), fn () =>
+            $this->get('/genre/movie/list')['genres'] ?? []
+        );
+    }
+
     public function details(int $id): array
     {
-        return Cache::remember("tmdb.movie.$id", now()->addHours(6), fn () =>
-            $this->get("/movie/$id", ['append_to_response' => 'credits'])
+        // "full" = includes credits and videos (older cache entries had credits only).
+        return Cache::remember("tmdb.movie.full.$id", now()->addHours(6), fn () =>
+            $this->get("/movie/$id", ['append_to_response' => 'credits,videos'])
+        );
+    }
+
+    public function recommendations(int $id): array
+    {
+        return Cache::remember("tmdb.recommendations.$id", now()->addHours(6), fn () =>
+            $this->get("/movie/$id/recommendations")['results'] ?? []
         );
     }
 
