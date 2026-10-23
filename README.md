@@ -15,7 +15,7 @@ Angular never calls TMDB directly. Laravel keeps the TMDB token in `backend/.env
 | 1. Laravel API (TMDB proxy, caching, error handling, CORS) | Done |
 | 2. Angular browsing (popular grid, debounced search, detail page, loading/error states) | Done |
 | 3. Accounts and favorites (Sanctum, MySQL) | Done: auth and favorites API on MySQL, login/register, token interceptor, favorite button, My Favorites page, route guards |
-| 4. Polish | Partly done (responsive layout, TMDB attribution). Planned: movie trailer (YouTube) and cast photos on the detail page, automated tests |
+| 4. Features and polish | Partly done (responsive layout, TMDB attribution). Planned: new home page (hero + Trending, Now playing, Coming soon, Top rated rows), Browse page with filters, "Because you liked..." recommendations, watchlist status with your own rating and note, movie trailer, cast photos, automated tests, accessibility |
 | 5. Cloud hosting | Not started |
 
 ## API endpoints
