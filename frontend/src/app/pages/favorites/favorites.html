@@ -1,12 +1,27 @@
 <section class="toolbar">
-  <h1>My favorites</h1>
+  <h1>My list</h1>
   @if (favorites.count()) {
     <span class="muted">{{ favorites.count() }} {{ favorites.count() === 1 ? 'movie' : 'movies' }}</span>
   }
 </section>
 
-@if (removeError()) {
-  <p class="form-error" role="alert">{{ removeError() }}</p>
+<div class="tabs" role="tablist" aria-label="Filter my list">
+  @for (t of tabs; track t.value) {
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.active]="tab() === t.value"
+      [attr.aria-selected]="tab() === t.value"
+      (click)="tab.set(t.value)"
+    >
+      {{ t.label }} <span class="badge">{{ countFor(t.value) }}</span>
+    </button>
+  }
+</div>
+
+@if (actionError()) {
+  <p class="form-error" role="alert">{{ actionError() }}</p>
 }
 
 @if (favorites.error()) {
@@ -15,38 +30,91 @@
     <button type="button" (click)="favorites.load()">Try again</button>
   </div>
 } @else if (favorites.loading() && !favorites.count()) {
-  <div class="grid">
-    @for (i of [1, 2, 3, 4, 5]; track i) {
+  <div class="grid list-grid" aria-busy="true">
+    @for (i of [1, 2, 3, 4]; track i) {
       <div class="card skeleton"></div>
     }
   </div>
 } @else {
-  <div class="grid">
-    @for (fav of favorites.favorites(); track fav.tmdb_id) {
-      <div class="card">
-        <a [routerLink]="['/movie', fav.tmdb_id]">
-          @if (fav.poster_path | poster; as src) {
-            <img [src]="src" [alt]="fav.title + ' poster'" loading="lazy" />
-          } @else {
-            <div class="no-poster">{{ fav.title }}</div>
-          }
-        </a>
-        <div class="card-body">
-          <h2><a [routerLink]="['/movie', fav.tmdb_id]">{{ fav.title }}</a></h2>
+  <div class="grid list-grid">
+    @for (fav of visible(); track fav.tmdb_id) {
+      <app-movie-card [movie]="{ id: fav.tmdb_id, title: fav.title, poster_path: fav.poster_path }">
+        <!-- Projected into the card body with <ng-content> -->
+        <div class="watch-controls" [class.busy]="busyId() === fav.tmdb_id">
+          <div class="status-toggle" role="group" [attr.aria-label]="'Status for ' + fav.title">
+            <button
+              type="button"
+              [class.active]="fav.status === 'want_to_watch'"
+              [attr.aria-pressed]="fav.status === 'want_to_watch'"
+              [disabled]="busyId() === fav.tmdb_id"
+              (click)="setStatus(fav, 'want_to_watch')"
+            >
+              Want to watch
+            </button>
+            <button
+              type="button"
+              [class.active]="fav.status === 'watched'"
+              [attr.aria-pressed]="fav.status === 'watched'"
+              [disabled]="busyId() === fav.tmdb_id"
+              (click)="setStatus(fav, 'watched')"
+            >
+              ✓ Watched
+            </button>
+          </div>
+
+          <div class="stars" role="group" [attr.aria-label]="'Your rating for ' + fav.title">
+            @for (s of stars; track s) {
+              <button
+                type="button"
+                class="star"
+                [class.filled]="(fav.rating ?? 0) >= s"
+                [attr.aria-label]="s + (s === 1 ? ' star' : ' stars')"
+                [attr.aria-pressed]="fav.rating === s"
+                [disabled]="busyId() === fav.tmdb_id"
+                (click)="setRating(fav, s)"
+              >
+                ★
+              </button>
+            }
+          </div>
+
+          <label class="note-label" [for]="'note-' + fav.tmdb_id">Note</label>
+          <textarea
+            [id]="'note-' + fav.tmdb_id"
+            rows="2"
+            maxlength="1000"
+            placeholder="Add a note..."
+            [value]="noteValue(fav)"
+            (input)="onNoteInput(fav, $event)"
+          ></textarea>
+          <div class="note-actions">
+            @if (noteChanged(fav)) {
+              <button type="button" class="small-button" [disabled]="busyId() === fav.tmdb_id" (click)="saveNote(fav)">
+                Save note
+              </button>
+            } @else if (savedNoteId() === fav.tmdb_id) {
+              <small class="saved-text" role="status">✓ Saved</small>
+            }
+          </div>
+
           <button
             type="button"
             class="remove-button"
-            [disabled]="removingId() === fav.tmdb_id"
-            (click)="remove(fav.tmdb_id)"
+            [disabled]="busyId() === fav.tmdb_id"
+            (click)="remove(fav)"
           >
-            {{ removingId() === fav.tmdb_id ? 'Removing...' : 'Remove' }}
+            Remove
           </button>
         </div>
-      </div>
+      </app-movie-card>
     } @empty {
       <div class="state empty-favorites">
-        <p>You haven't saved any movies yet.</p>
-        <a routerLink="/" class="nav-cta">Browse movies</a>
+        @if (favorites.count()) {
+          <p>No movies in this list yet.</p>
+        } @else {
+          <p>You haven't saved any movies yet.</p>
+          <a routerLink="/browse" class="nav-cta">Browse movies</a>
+        }
       </div>
     }
   </div>

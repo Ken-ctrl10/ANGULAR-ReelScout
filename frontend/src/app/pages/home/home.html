@@ -1,0 +1,71 @@
+<!-- Hero: trending movie of the week -->
+@if (hero(); as movie) {
+  <section class="hero" aria-labelledby="hero-title">
+    @if (movie.backdrop_path | poster: 'w1280'; as backdrop) {
+      <div class="hero-backdrop" [style.background-image]="'url(' + backdrop + ')'"></div>
+    }
+    <div class="hero-content">
+      <p class="hero-label">🔥 Trending this week</p>
+      <h1 id="hero-title">{{ movie.title }}</h1>
+      <p class="meta">
+        <span class="rating">★ {{ movie.vote_average | number: '1.1-1' }}</span>
+        @if (movie.release_date) {
+          <span>{{ movie.release_date | date: 'yyyy' }}</span>
+        }
+      </p>
+      <p class="hero-overview">{{ movie.overview }}</p>
+      <div class="hero-actions">
+        <a class="nav-cta hero-button" [routerLink]="['/movie', movie.id]">▶ Details &amp; trailer</a>
+        <a class="hero-secondary" routerLink="/browse">Browse all movies</a>
+      </div>
+    </div>
+  </section>
+} @else if (heroLoading()) {
+  <div class="hero skeleton" aria-hidden="true"></div>
+}
+
+<!-- Personal row: only for logged-in users who saved something -->
+@if (auth.isLoggedIn() && favorites.count() > 0) {
+  @defer (on viewport) {
+    <app-movie-row
+      title="❤️ Recommended for you"
+      [subtitle]="recommendationsSubtitle()"
+      emptyText="No recommendations yet. Save a few more movies."
+      [source]="recommendations$"
+    />
+  } @placeholder {
+    <div class="row-placeholder" aria-hidden="true"></div>
+  }
+}
+
+<!-- Each row loads only when it scrolls into view -->
+@defer (on viewport) {
+  <app-movie-row title="🔥 Trending this week" [source]="trending$" />
+} @placeholder {
+  <div class="row-placeholder" aria-hidden="true"></div>
+}
+
+@defer (on viewport) {
+  <app-movie-row title="🎟️ Now playing in cinemas" [source]="nowPlaying$" />
+} @placeholder {
+  <div class="row-placeholder" aria-hidden="true"></div>
+}
+
+@defer (on viewport) {
+  <app-movie-row title="📅 Coming soon" [source]="upcoming$" />
+} @placeholder {
+  <div class="row-placeholder" aria-hidden="true"></div>
+}
+
+@defer (on viewport) {
+  <app-movie-row title="🏆 Top rated" [source]="topRated$" />
+} @placeholder {
+  <div class="row-placeholder" aria-hidden="true"></div>
+}
+
+@if (!auth.isLoggedIn()) {
+  <section class="signup-banner">
+    <p>Sign up to save movies, track what you've watched, and get recommendations.</p>
+    <a routerLink="/register" class="nav-cta">Create a free account</a>
+  </section>
+}

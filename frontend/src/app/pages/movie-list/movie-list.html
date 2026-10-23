@@ -1,14 +1,63 @@
 <section class="toolbar">
-  <h1>{{ query().trim() ? 'Search results' : 'Popular movies' }}</h1>
+  <h1>{{ heading() }}</h1>
   <input
     class="search"
     type="search"
-    placeholder="Search movies..."
-    aria-label="Search movies"
-    [value]="query()" 
+    placeholder="Search movies by title..."
+    aria-label="Search movies by title"
+    [value]="query()"
     (input)="onSearch($event)"
   />
 </section>
+
+<section class="filters" aria-label="Filters">
+  <label>
+    <span>Genre</span>
+    <select [disabled]="isSearching()" (change)="onGenre($event)">
+      <option value="" [selected]="!genre()">Any genre</option>
+      @for (g of genres(); track g.id) {
+        <option [value]="g.id" [selected]="g.id === genre()">{{ g.name }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    <span>Year</span>
+    <select [disabled]="isSearching()" (change)="onYear($event)">
+      <option value="" [selected]="!year()">Any year</option>
+      @for (y of years; track y) {
+        <option [value]="y" [selected]="y === year()">{{ y }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    <span>Rating</span>
+    <select [disabled]="isSearching()" (change)="onRating($event)">
+      <option value="" [selected]="!minRating()">Any rating</option>
+      @for (r of ratings; track r) {
+        <option [value]="r" [selected]="r === minRating()">★ {{ r }}+</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    <span>Sort by</span>
+    <select [disabled]="isSearching()" (change)="onSort($event)">
+      @for (s of sorts; track s.value) {
+        <option [value]="s.value" [selected]="s.value === sort()">{{ s.label }}</option>
+      }
+    </select>
+  </label>
+
+  @if (hasFilters() && !isSearching()) {
+    <button type="button" class="link-button clear-filters" (click)="clearFilters()">Clear filters</button>
+  }
+</section>
+
+@if (isSearching()) {
+  <p class="muted filters-note">Filters apply when browsing. Clear the search to use them.</p>
+}
 
 @if (error()) {
   <div class="state error">
@@ -16,38 +65,31 @@
     <button type="button" (click)="retry()">Try again</button>
   </div>
 } @else if (loading() && !result()) {
-  <div class="grid">
+  <div class="grid" aria-busy="true">
     @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
       <div class="card skeleton"></div>
     }
   </div>
 } @else if (result(); as res) {
   @if (res.results.length === 0) {
-    <p class="state">No movies found for "{{ query() }}".</p>
+    <p class="state">
+      @if (isSearching()) {
+        No movies found for "{{ query() }}".
+      } @else {
+        No movies match these filters.
+      }
+    </p>
   } @else {
     <div class="grid" [class.dim]="loading()">
       @for (movie of res.results; track movie.id) {
-        <a class="card" [routerLink]="['/movie', movie.id]">
-          @if (movie.poster_path | poster; as src) {
-            <img [src]="src" [alt]="movie.title + ' poster'" loading="lazy" />
-          } @else {
-            <div class="no-poster">{{ movie.title }}</div>
-          }
-          <div class="card-body">
-            <h2>{{ movie.title }}</h2>
-            <p class="meta">
-              <span>{{ movie.release_date ? movie.release_date.slice(0, 4) : '—' }}</span>
-              <span class="rating">★ {{ movie.vote_average.toFixed(1) }}</span>
-            </p>
-          </div>
-        </a>
+        <app-movie-card [movie]="movie" />
       }
     </div>
 
     <nav class="pager" aria-label="Pagination">
       <button type="button" [disabled]="res.page <= 1 || loading()" (click)="goToPage(res.page - 1)">← Prev</button>
-      <span>Page {{ res.page }} of {{ res.total_pages > 500 ? 500 : res.total_pages }}</span>
-      <button type="button" [disabled]="res.page >= res.total_pages || res.page >= 500 || loading()" (click)="goToPage(res.page + 1)">Next →</button>
+      <span>Page {{ res.page }} of {{ lastPage() }}</span>
+      <button type="button" [disabled]="res.page >= lastPage() || loading()" (click)="goToPage(res.page + 1)">Next →</button>
     </nav>
   }
 }

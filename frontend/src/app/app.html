@@ -1,24 +1,33 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+
 <header class="site-header">
   <a routerLink="/" class="brand">🎬 Reel Scout</a>
 
-  <nav class="header-nav">
-    @if (auth.user(); as user) {
+  <nav class="main-nav" aria-label="Main">
+    <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/browse" routerLinkActive="active-link">Browse</a>
+    @if (auth.isLoggedIn()) {
       <a routerLink="/favorites" routerLinkActive="active-link">
-        ♥ Favorites
+        My list
         @if (favorites.count()) {
-          <span class="badge">{{ favorites.count() }}</span>
+          <span class="badge" [attr.aria-label]="favorites.count() + ' movies'">{{ favorites.count() }}</span>
         }
       </a>
+    }
+  </nav>
+
+  <div class="header-nav">
+    @if (auth.user(); as user) {
       <span class="greeting">Hi, {{ user.name }}</span>
       <button type="button" class="link-button" (click)="logout()">Log out</button>
     } @else {
       <a routerLink="/login">Log in</a>
       <a routerLink="/register" class="nav-cta">Sign up</a>
     }
-  </nav>
+  </div>
 </header>
 
-<main class="container">
+<main class="container" id="main-content" tabindex="-1">
   <router-outlet />
 </main>
 

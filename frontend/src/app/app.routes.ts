@@ -5,8 +5,13 @@ import { authGuard, guestGuard } from './core/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/movie-list/movie-list').then((m) => m.MovieList),
+    loadComponent: () => import('./pages/home/home').then((m) => m.Home),
     title: 'Reel Scout',
+  },
+  {
+    path: 'browse',
+    loadComponent: () => import('./pages/movie-list/movie-list').then((m) => m.MovieList),
+    title: 'Browse · Reel Scout',
   },
   {
     // Lazy-loaded: the detail page code is only downloaded when first visited.
@@ -18,7 +23,7 @@ export const routes: Routes = [
     path: 'favorites',
     canActivate: [authGuard], // logged-in users only
     loadComponent: () => import('./pages/favorites/favorites').then((m) => m.Favorites),
-    title: 'My favorites · Reel Scout',
+    title: 'My list · Reel Scout',
   },
   {
     path: 'login',

@@ -4,7 +4,7 @@ import { Observable, tap } from 'rxjs';
 
 import { API_URL } from './api.config';
 import { AuthService } from './auth.service';
-import { Favorite, FavoriteInput } from './favorite.model';
+import { Favorite, FavoriteChanges, FavoriteInput } from './favorite.model';
 
 /**
  * The logged-in user's favorites, shared by the whole app.
@@ -62,6 +62,16 @@ export class FavoritesService {
         }
       }),
     );
+  }
+
+  update(tmdbId: number, changes: FavoriteChanges): Observable<Favorite> {
+    return this.http
+      .patch<Favorite>(`${API_URL}/favorites/${tmdbId}`, changes)
+      .pipe(
+        tap((updated) =>
+          this._favorites.update((list) => list.map((f) => (f.tmdb_id === tmdbId ? updated : f))),
+        ),
+      );
   }
 
   remove(tmdbId: number): Observable<void> {

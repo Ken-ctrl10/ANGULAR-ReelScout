@@ -22,7 +22,7 @@ import { FavoritesService } from '../core/favorites.service';
       (click)="toggle()"
     >
       <span aria-hidden="true">{{ isFavorite() ? '♥' : '♡' }}</span>
-      {{ isFavorite() ? 'In favorites' : 'Add to favorites' }}
+      {{ isFavorite() ? 'In my list' : 'Add to my list' }}
     </button>
     @if (error()) {
       <small class="field-error">{{ error() }}</small>
@@ -59,7 +59,7 @@ export class FavoriteButton {
       next: () => this.busy.set(false),
       error: () => {
         this.busy.set(false);
-        this.error.set('Could not update favorites. Please try again.');
+        this.error.set('Could not update your list. Please try again.');
       },
     });
   }

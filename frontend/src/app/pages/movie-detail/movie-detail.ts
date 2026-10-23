@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { DatePipe, DecimalPipe, Location } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { catchError, of, switchMap, tap } from 'rxjs';
@@ -8,10 +8,11 @@ import { MovieDetails } from '../../core/movie.model';
 import { MovieService } from '../../core/movie.service';
 import { FavoriteButton } from '../../shared/favorite-button';
 import { PosterPipe } from '../../shared/poster.pipe';
+import { TrailerPlayer } from '../../shared/trailer-player';
 
 @Component({
   selector: 'app-movie-detail',
-  imports: [PosterPipe, FavoriteButton],
+  imports: [PosterPipe, FavoriteButton, TrailerPlayer, DatePipe, DecimalPipe],
   templateUrl: './movie-detail.html',
 })
 export class MovieDetail {
@@ -26,6 +27,17 @@ export class MovieDetail {
   readonly error = signal<string | null>(null);
 
   readonly topCast = computed(() => this.movie()?.credits?.cast.slice(0, 8) ?? []);
+
+  // Best YouTube video: an official trailer, then any trailer, then a teaser.
+  readonly trailer = computed(() => {
+    const videos = (this.movie()?.videos?.results ?? []).filter((v) => v.site === 'YouTube');
+    return (
+      videos.find((v) => v.type === 'Trailer' && v.official) ??
+      videos.find((v) => v.type === 'Trailer') ??
+      videos.find((v) => v.type === 'Teaser') ??
+      null
+    );
+  });
 
   constructor() {
     toObservable(this.id)
@@ -52,6 +64,16 @@ export class MovieDetail {
 
   back(): void {
     this.location.back();
+  }
+
+  // "Leonardo DiCaprio" -> "LD" (shown when an actor has no photo)
+  initials(name: string): string {
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
   }
 
   runtime(minutes: number | null): string {
