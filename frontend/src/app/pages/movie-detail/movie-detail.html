@@ -1,4 +1,4 @@
-<button type="button" class="back" (click)="back()">← Back</button>
+<button type="button" class="back" (click)="back()">Back</button>
 
 @if (loading()) {
   <div class="detail" aria-busy="true">
@@ -52,7 +52,7 @@
           <app-trailer-player [videoKey]="video.key" [title]="m.title" />
         } @placeholder {
           <button type="button" class="play-trailer">
-            <span aria-hidden="true">▶</span> Play trailer
+            Play trailer
             <small>{{ video.name }}</small>
           </button>
         } @loading (minimum 300ms) {

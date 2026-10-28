@@ -5,7 +5,7 @@
       <div class="hero-backdrop" [style.background-image]="'url(' + backdrop + ')'"></div>
     }
     <div class="hero-content">
-      <p class="hero-label">🔥 Trending this week</p>
+      <p class="hero-label">Trending this week</p>
       <h1 id="hero-title">{{ movie.title }}</h1>
       <p class="meta">
         <span class="rating">★ {{ movie.vote_average | number: '1.1-1' }}</span>
@@ -15,7 +15,7 @@
       </p>
       <p class="hero-overview">{{ movie.overview }}</p>
       <div class="hero-actions">
-        <a class="nav-cta hero-button" [routerLink]="['/movie', movie.id]">▶ Details &amp; trailer</a>
+        <a class="nav-cta hero-button" [routerLink]="['/movie', movie.id]">View details</a>
         <a class="hero-secondary" routerLink="/browse">Browse all movies</a>
       </div>
     </div>
@@ -28,7 +28,7 @@
 @if (auth.isLoggedIn() && favorites.count() > 0) {
   @defer (on viewport) {
     <app-movie-row
-      title="❤️ Recommended for you"
+      title="Recommended for you"
       [subtitle]="recommendationsSubtitle()"
       emptyText="No recommendations yet. Save a few more movies."
       [source]="recommendations$"
@@ -40,25 +40,25 @@
 
 <!-- Each row loads only when it scrolls into view -->
 @defer (on viewport) {
-  <app-movie-row title="🔥 Trending this week" [source]="trending$" />
+  <app-movie-row title="Trending this week" [source]="trending$" />
 } @placeholder {
   <div class="row-placeholder" aria-hidden="true"></div>
 }
 
 @defer (on viewport) {
-  <app-movie-row title="🎟️ Now playing in cinemas" [source]="nowPlaying$" />
+  <app-movie-row title="Now playing in cinemas" [source]="nowPlaying$" />
 } @placeholder {
   <div class="row-placeholder" aria-hidden="true"></div>
 }
 
 @defer (on viewport) {
-  <app-movie-row title="📅 Coming soon" [source]="upcoming$" />
+  <app-movie-row title="Coming soon" [source]="upcoming$" />
 } @placeholder {
   <div class="row-placeholder" aria-hidden="true"></div>
 }
 
 @defer (on viewport) {
-  <app-movie-row title="🏆 Top rated" [source]="topRated$" />
+  <app-movie-row title="Top rated" [source]="topRated$" />
 } @placeholder {
   <div class="row-placeholder" aria-hidden="true"></div>
 }

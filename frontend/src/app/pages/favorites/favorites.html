@@ -58,7 +58,7 @@
               [disabled]="busyId() === fav.tmdb_id"
               (click)="setStatus(fav, 'watched')"
             >
-              ✓ Watched
+              Watched
             </button>
           </div>
 
@@ -93,7 +93,7 @@
                 Save note
               </button>
             } @else if (savedNoteId() === fav.tmdb_id) {
-              <small class="saved-text" role="status">✓ Saved</small>
+              <small class="saved-text" role="status">Saved</small>
             }
           </div>
 

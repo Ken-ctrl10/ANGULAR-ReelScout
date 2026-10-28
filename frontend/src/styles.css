@@ -56,7 +56,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   justify-content: space-between;
   gap: 12px;
 }
-.brand { font-weight: 700; font-size: 1.15rem; white-space: nowrap; }
+.brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.01em; white-space: nowrap; }
+.brand span { color: var(--accent); }
 
 .header-nav { display: flex; align-items: center; gap: 14px; font-size: 0.9rem; }
 .header-nav a:hover, .link-button:hover { color: var(--accent); }
@@ -125,7 +126,6 @@ button.primary:hover:not(:disabled) { filter: brightness(1.1); }
 }
 .detail-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 18px; }
 .fav-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; font-weight: 600; }
-.fav-button span { font-size: 1.15rem; line-height: 1; }
 .fav-button.active { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255, 77, 109, 0.1); }
 .card-body h2 a:hover, .card-body h3 a:hover { color: var(--accent); }
 .remove-button { margin-top: 8px; width: 100%; padding: 6px 10px; font-size: 0.85rem; }
@@ -192,11 +192,16 @@ button.primary:hover:not(:disabled) { filter: brightness(1.1); }
 }
 .search:focus { border-color: var(--accent); }
 
+/* TMDB pages have 20 movies, so the column counts divide 20 evenly (5, 4, 2):
+   every row is full and there are no leftover cards on the last row. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 18px;
   transition: opacity 0.2s;
+}
+@media (max-width: 1023px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 .grid.dim { opacity: 0.5; }
 
@@ -438,7 +443,15 @@ main:focus { outline: none; }
   font-weight: 600;
   background: var(--surface-2);
 }
-.play-trailer span { color: var(--accent); font-size: 1.1rem; }
+/* Play triangle drawn with CSS borders (no icon font or emoji) */
+.play-trailer::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 12px;
+  border-color: transparent transparent transparent var(--accent);
+}
 .play-trailer small { color: var(--muted); font-weight: 400; }
 .trailer-frame {
   position: relative;
@@ -488,7 +501,7 @@ main:focus { outline: none; }
 .watch-controls .remove-button { margin-top: 2px; }
 
 @media (max-width: 640px) {
-  .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .detail { grid-template-columns: 1fr; gap: 20px; }
   .detail-poster { max-width: 240px; margin: 0 auto; }
   .detail-info h1 { font-size: 1.5rem; }

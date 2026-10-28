@@ -21,7 +21,6 @@ import { FavoritesService } from '../core/favorites.service';
       [attr.aria-pressed]="isFavorite()"
       (click)="toggle()"
     >
-      <span aria-hidden="true">{{ isFavorite() ? '♥' : '♡' }}</span>
       {{ isFavorite() ? 'In my list' : 'Add to my list' }}
     </button>
     @if (error()) {

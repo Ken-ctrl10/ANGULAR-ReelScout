@@ -36,7 +36,7 @@
     <select [disabled]="isSearching()" (change)="onRating($event)">
       <option value="" [selected]="!minRating()">Any rating</option>
       @for (r of ratings; track r) {
-        <option [value]="r" [selected]="r === minRating()">★ {{ r }}+</option>
+        <option [value]="r" [selected]="r === minRating()">{{ r }}+ rating</option>
       }
     </select>
   </label>
@@ -87,9 +87,9 @@
     </div>
 
     <nav class="pager" aria-label="Pagination">
-      <button type="button" [disabled]="res.page <= 1 || loading()" (click)="goToPage(res.page - 1)">← Prev</button>
+      <button type="button" [disabled]="res.page <= 1 || loading()" (click)="goToPage(res.page - 1)">Previous</button>
       <span>Page {{ res.page }} of {{ lastPage() }}</span>
-      <button type="button" [disabled]="res.page >= lastPage() || loading()" (click)="goToPage(res.page + 1)">Next →</button>
+      <button type="button" [disabled]="res.page >= lastPage() || loading()" (click)="goToPage(res.page + 1)">Next</button>
     </nav>
   }
 }
