@@ -3,8 +3,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Observable, catchError, combineLatest, map, of, switchMap, tap } from 'rxjs';
 
 import { errorMessage } from '../core/error-message';
-import { Movie } from '../core/movie.model';
-import { MovieCard } from './movie-card';
+import { CardMovie, MovieCard } from './movie-card';
 
 let nextId = 0;
 
@@ -72,12 +71,12 @@ export class MovieRow {
   readonly title = input.required<string>();
   readonly subtitle = input<string>('');
   readonly emptyText = input('No movies to show right now.');
-  readonly source = input.required<Observable<{ results: Movie[] }>>();
+  readonly source = input.required<Observable<{ results: CardMovie[] }>>();
 
   readonly headingId = `movie-row-${nextId++}`;
   readonly placeholders = [1, 2, 3, 4, 5, 6];
 
-  readonly movies = signal<Movie[]>([]);
+  readonly movies = signal<CardMovie[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   private readonly reloadCount = signal(0);
@@ -100,7 +99,7 @@ export class MovieRow {
             map((page) => page.results),
             catchError((err) => {
               this.error.set(errorMessage(err));
-              return of([] as Movie[]);
+              return of([] as CardMovie[]);
             }),
           ),
         ),

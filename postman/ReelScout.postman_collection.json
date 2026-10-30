@@ -804,6 +804,115 @@
               }
             }
           ]
+        },
+        {
+          "name": "20. Actor page (Leonardo DiCaprio)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/people/6193",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "people",
+                "6193"
+              ]
+            },
+            "description": "Profile, known-for movies and full filmography for an actor."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const p = pm.response.json();",
+                  "pm.test('Profile', () => { pm.expect(p.name).to.eql('Leonardo DiCaprio'); pm.expect(p.known_for_department).to.eql('Acting'); });",
+                  "pm.test('Known for includes Inception', () => pm.expect(p.known_for.map(m => m.title)).to.include('Inception'));",
+                  "pm.test('Filmography has roles', () => pm.expect(p.credits.find(m => m.id === 27205).roles).to.include('Dom Cobb'));",
+                  "pm.test('No duplicate movies', () => { const ids = p.credits.map(m => m.id); pm.expect(new Set(ids).size).to.eql(ids.length); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "21. Director page (Christopher Nolan)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/people/525",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "people",
+                "525"
+              ]
+            },
+            "description": "Directors get their directing credits too."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has Director credits', () => pm.expect(pm.response.json().credits.some(m => m.roles.includes('Director'))).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "22. Unknown person - expect 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/people/999999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "people",
+                "999999999"
+              ]
+            },
+            "description": "A person that doesn't exist on TMDB."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Clean message', () => pm.expect(pm.response.json().message).to.eql('Person not found.'));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -811,7 +920,7 @@
       "name": "Security and performance",
       "item": [
         {
-          "name": "20. CORS - Angular app is allowed",
+          "name": "23. CORS - Angular app is allowed",
           "request": {
             "method": "GET",
             "header": [
@@ -851,7 +960,7 @@
           ]
         },
         {
-          "name": "21. CORS - other websites are blocked",
+          "name": "24. CORS - other websites are blocked",
           "request": {
             "method": "GET",
             "header": [
@@ -891,7 +1000,7 @@
           ]
         },
         {
-          "name": "22. Security - TMDB token is never exposed",
+          "name": "25. Security - TMDB token is never exposed",
           "request": {
             "method": "GET",
             "header": [
@@ -929,7 +1038,7 @@
           ]
         },
         {
-          "name": "23. Performance - cached response is fast",
+          "name": "26. Performance - cached response is fast",
           "request": {
             "method": "GET",
             "header": [
@@ -969,7 +1078,7 @@
       "name": "Auth and favorites",
       "item": [
         {
-          "name": "24. Register a new user",
+          "name": "27. Register a new user",
           "request": {
             "method": "POST",
             "header": [
@@ -1028,7 +1137,7 @@
           ]
         },
         {
-          "name": "25. Register with an email already used - expect 422",
+          "name": "28. Register with an email already used - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -1070,7 +1179,7 @@
           ]
         },
         {
-          "name": "26. Register with mismatched passwords - expect 422",
+          "name": "29. Register with mismatched passwords - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -1112,7 +1221,7 @@
           ]
         },
         {
-          "name": "27. Login with a wrong password - expect 422",
+          "name": "30. Login with a wrong password - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -1154,7 +1263,7 @@
           ]
         },
         {
-          "name": "28. Login",
+          "name": "31. Login",
           "request": {
             "method": "POST",
             "header": [
@@ -1198,7 +1307,7 @@
           ]
         },
         {
-          "name": "29. Get the logged-in user",
+          "name": "32. Get the logged-in user",
           "request": {
             "method": "GET",
             "header": [
@@ -1236,7 +1345,7 @@
           ]
         },
         {
-          "name": "30. Get favorites without a token - expect 401",
+          "name": "33. Get favorites without a token - expect 401",
           "request": {
             "method": "GET",
             "header": [
@@ -1270,7 +1379,7 @@
           ]
         },
         {
-          "name": "31. Add a favorite (Inception)",
+          "name": "34. Add a favorite (Inception)",
           "request": {
             "method": "POST",
             "header": [
@@ -1316,7 +1425,7 @@
           ]
         },
         {
-          "name": "32. Add the same favorite again - no duplicate",
+          "name": "35. Add the same favorite again - no duplicate",
           "request": {
             "method": "POST",
             "header": [
@@ -1361,7 +1470,7 @@
           ]
         },
         {
-          "name": "33. Add a favorite with missing fields - expect 422",
+          "name": "36. Add a favorite with missing fields - expect 422",
           "request": {
             "method": "POST",
             "header": [
@@ -1411,7 +1520,7 @@
           ]
         },
         {
-          "name": "34. List my favorites",
+          "name": "37. List my favorites",
           "request": {
             "method": "GET",
             "header": [
@@ -1451,7 +1560,7 @@
           ]
         },
         {
-          "name": "35. Update watchlist fields (watched, 5 stars, note)",
+          "name": "38. Update watchlist fields (watched, 5 stars, note)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1499,7 +1608,7 @@
           ]
         },
         {
-          "name": "36. Update watchlist with invalid values - expect 422",
+          "name": "39. Update watchlist with invalid values - expect 422",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1546,7 +1655,7 @@
           ]
         },
         {
-          "name": "37. Update a movie not in my list - expect 404",
+          "name": "40. Update a movie not in my list - expect 404",
           "request": {
             "method": "PATCH",
             "header": [
@@ -1593,7 +1702,7 @@
           ]
         },
         {
-          "name": "38. Get recommendations (Because you liked...)",
+          "name": "41. Get recommendations (Because you liked...)",
           "request": {
             "method": "GET",
             "header": [
@@ -1635,7 +1744,7 @@
           ]
         },
         {
-          "name": "39. Get recommendations without a token - expect 401",
+          "name": "42. Get recommendations without a token - expect 401",
           "request": {
             "method": "GET",
             "header": [
@@ -1668,7 +1777,7 @@
           ]
         },
         {
-          "name": "40. Remove a favorite",
+          "name": "43. Remove a favorite",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1706,7 +1815,7 @@
           ]
         },
         {
-          "name": "41. List favorites after removing - expect empty",
+          "name": "44. List favorites after removing - expect empty",
           "request": {
             "method": "GET",
             "header": [
@@ -1744,7 +1853,7 @@
           ]
         },
         {
-          "name": "42. Logout",
+          "name": "45. Logout",
           "request": {
             "method": "POST",
             "header": [
@@ -1781,7 +1890,7 @@
           ]
         },
         {
-          "name": "43. Use the old token after logout - expect 401",
+          "name": "46. Use the old token after logout - expect 401",
           "request": {
             "method": "GET",
             "header": [

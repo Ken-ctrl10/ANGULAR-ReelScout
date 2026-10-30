@@ -9,6 +9,7 @@ import {
   MovieDetails,
   MovieListCategory,
   MoviePage,
+  Person,
   Recommendations,
 } from './movie.model';
 
@@ -50,6 +51,10 @@ export class MovieService {
 
   details(id: number): Observable<MovieDetails> {
     return this.http.get<MovieDetails>(`${API_URL}/movies/${id}`);
+  }
+
+  person(id: number): Observable<Person> {
+    return this.http.get<Person>(`${API_URL}/people/${id}`);
   }
 
   // Logged-in only (the interceptor adds the token).

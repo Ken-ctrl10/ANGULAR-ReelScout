@@ -36,6 +36,12 @@ describe('MovieService', () => {
     expect(req.request.params.has('year')).toBe(false);
   });
 
+  it('person() calls the people endpoint', () => {
+    service.person(6193).subscribe((p) => expect(p.name).toBe('Leonardo DiCaprio'));
+
+    http.expectOne(`${API_URL}/people/6193`).flush({ id: 6193, name: 'Leonardo DiCaprio', credits: [], known_for: [] });
+  });
+
   it('genres() is fetched once and shared', () => {
     service.genres().subscribe();
     service.genres().subscribe();

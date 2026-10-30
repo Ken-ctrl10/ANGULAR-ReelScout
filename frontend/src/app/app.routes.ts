@@ -20,6 +20,11 @@ export const routes: Routes = [
     title: 'Movie details · Reel Scout',
   },
   {
+    path: 'person/:id',
+    loadComponent: () => import('./pages/person/person').then((m) => m.Person),
+    title: 'Actor · Reel Scout',
+  },
+  {
     path: 'favorites',
     canActivate: [authGuard], // logged-in users only
     loadComponent: () => import('./pages/favorites/favorites').then((m) => m.Favorites),

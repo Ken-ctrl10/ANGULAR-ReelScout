@@ -1,0 +1,87 @@
+<button type="button" class="back" (click)="back()">Back</button>
+
+@if (loading()) {
+  <div class="person-header" aria-busy="true">
+    <div class="person-photo skeleton"></div>
+    <div class="person-info">
+      <div class="skeleton line wide"></div>
+      <div class="skeleton line"></div>
+      <div class="skeleton line"></div>
+    </div>
+  </div>
+} @else if (error()) {
+  <div class="state error"><p>{{ error() }}</p></div>
+} @else if (person(); as p) {
+  <article>
+    <section class="person-header">
+      @if (p.profile_path | poster: 'w500'; as photo) {
+        <img class="person-photo" [src]="photo" [alt]="'Photo of ' + p.name" />
+      } @else {
+        <div class="person-photo no-poster">{{ p.name }}</div>
+      }
+
+      <div class="person-info">
+        <h1>{{ p.name }}</h1>
+        <dl class="person-facts">
+          @if (p.known_for_department) {
+            <div><dt>Known for</dt><dd>{{ p.known_for_department }}</dd></div>
+          }
+          @if (p.birthday) {
+            <div>
+              <dt>Born</dt>
+              <dd>
+                {{ p.birthday | date: 'mediumDate' }}
+                @if (!p.deathday && age() !== null) {
+                  ({{ age() }} years old)
+                }
+              </dd>
+            </div>
+          }
+          @if (p.deathday) {
+            <div><dt>Died</dt><dd>{{ p.deathday | date: 'mediumDate' }} (aged {{ age() }})</dd></div>
+          }
+          @if (p.place_of_birth) {
+            <div><dt>Place of birth</dt><dd>{{ p.place_of_birth }}</dd></div>
+          }
+          <div><dt>Movies</dt><dd>{{ p.credits.length }}</dd></div>
+        </dl>
+
+        <h2>Biography</h2>
+        @if (p.biography) {
+          <p class="person-bio" [class.clamped]="longBio() && !showFullBio()">{{ p.biography }}</p>
+          @if (longBio()) {
+            <button type="button" class="link-button read-more" (click)="showFullBio.set(!showFullBio())">
+              {{ showFullBio() ? 'Show less' : 'Read more' }}
+            </button>
+          }
+        } @else {
+          <p class="muted">No biography available.</p>
+        }
+      </div>
+    </section>
+
+    @if (p.known_for.length && knownFor$(); as source) {
+      <app-movie-row title="Known for" [source]="source" />
+    }
+
+    <section aria-labelledby="filmography-title">
+      <h2 id="filmography-title" class="section-title">Filmography</h2>
+      @if (p.credits.length) {
+        <div class="grid">
+          @for (c of p.credits; track c.id) {
+            <app-movie-card [movie]="c">
+              @if (!c.release_date) {
+                <span class="upcoming-badge">Announced</span>
+              }
+              @if (c.roles.length) {
+                <p class="credit-role">{{ c.roles.join(', ') }}</p>
+              }
+            </app-movie-card>
+          }
+        </div>
+      } @else {
+        <p class="muted">No movies found.</p>
+      }
+    </section>
+  </article>
+}

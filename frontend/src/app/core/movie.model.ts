@@ -60,6 +60,30 @@ export type DiscoverSort =
   | 'primary_release_date.desc'
   | 'revenue.desc';
 
+// A movie in an actor's filmography, with their role(s) in it.
+export interface PersonCredit {
+  id: number;
+  title: string;
+  poster_path: string | null;
+  release_date: string | null; // null = not released yet
+  vote_average: number;
+  vote_count: number;
+  roles: string[]; // characters played, or jobs like "Director"
+}
+
+export interface Person {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  known_for_department: string | null; // "Acting", "Directing", ...
+  known_for: PersonCredit[];
+  credits: PersonCredit[];
+}
+
 export interface Recommendations {
   based_on: { tmdb_id: number; title: string }[];
   results: Movie[];

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\RecommendationController;
 use App\Services\TmdbService;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::prefix('movies')->controller(MovieController::class)->group(function () {
     Route::get('/{id}', 'show')->whereNumber('id');
 });
 Route::get('/genres', [MovieController::class, 'genres']);
+Route::get('/people/{id}', [PersonController::class, 'show'])->whereNumber('id');
 
 // Public: auth (max 10 attempts per minute to slow down password guessing)
 Route::middleware('throttle:10,1')->group(function () {

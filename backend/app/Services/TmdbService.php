@@ -98,6 +98,16 @@ class TmdbService
         );
     }
 
+    /**
+     * An actor (or director) with all their movie credits in one call.
+     */
+    public function person(int $id): array
+    {
+        return Cache::remember("tmdb.person.$id", now()->addHours(6), fn () =>
+            $this->get("/person/$id", ['append_to_response' => 'movie_credits'])
+        );
+    }
+
     public function recommendations(int $id): array
     {
         return Cache::remember("tmdb.recommendations.$id", now()->addHours(6), fn () =>

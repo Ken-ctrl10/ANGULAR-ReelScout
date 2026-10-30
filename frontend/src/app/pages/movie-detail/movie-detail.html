@@ -65,13 +65,16 @@
         <ul class="cast">
           @for (c of topCast(); track c.id) {
             <li>
-              @if (c.profile_path | poster: 'w185'; as photo) {
-                <img [src]="photo" [alt]="'Photo of ' + c.name" loading="lazy" />
-              } @else {
-                <div class="no-photo" aria-hidden="true">{{ initials(c.name) }}</div>
-              }
-              <strong>{{ c.name }}</strong>
-              <span>{{ c.character }}</span>
+              <!-- Click an actor to see their other movies -->
+              <a class="cast-link" [routerLink]="['/person', c.id]">
+                @if (c.profile_path | poster: 'w185'; as photo) {
+                  <img [src]="photo" [alt]="'Photo of ' + c.name" loading="lazy" />
+                } @else {
+                  <div class="no-photo" aria-hidden="true">{{ initials(c.name) }}</div>
+                }
+                <strong>{{ c.name }}</strong>
+                <span>{{ c.character }}</span>
+              </a>
             </li>
           }
         </ul>

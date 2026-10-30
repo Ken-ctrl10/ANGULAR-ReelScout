@@ -1,6 +1,7 @@
 import { DatePipe, DecimalPipe, Location } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { catchError, of, switchMap, tap } from 'rxjs';
 
 import { errorMessage } from '../../core/error-message';
@@ -12,7 +13,7 @@ import { TrailerPlayer } from '../../shared/trailer-player';
 
 @Component({
   selector: 'app-movie-detail',
-  imports: [PosterPipe, FavoriteButton, TrailerPlayer, DatePipe, DecimalPipe],
+  imports: [RouterLink, PosterPipe, FavoriteButton, TrailerPlayer, DatePipe, DecimalPipe],
   templateUrl: './movie-detail.html',
 })
 export class MovieDetail {
