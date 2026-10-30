@@ -17,20 +17,13 @@ let nextId = 0;
 @Component({
   selector: 'app-movie-row',
   imports: [MovieCard],
+  host: { '(window:resize)': 'updateArrows()' },
   template: `
     <section class="movie-row" [attr.aria-labelledby]="headingId">
       <div class="row-header">
-        <div>
-          <h2 [id]="headingId">{{ title() }}</h2>
-          @if (subtitle()) {
-            <p class="muted row-subtitle">{{ subtitle() }}</p>
-          }
-        </div>
-        @if (movies().length) {
-          <div class="row-controls">
-            <button type="button" class="icon-button" (click)="scroll(-1)" [attr.aria-label]="'Scroll ' + title() + ' left'">‹</button>
-            <button type="button" class="icon-button" (click)="scroll(1)" [attr.aria-label]="'Scroll ' + title() + ' right'">›</button>
-          </div>
+        <h2 [id]="headingId">{{ title() }}</h2>
+        @if (subtitle()) {
+          <p class="muted row-subtitle">{{ subtitle() }}</p>
         }
       </div>
 
@@ -48,9 +41,27 @@ let nextId = 0;
       } @else if (movies().length === 0) {
         <p class="muted row-state">{{ emptyText() }}</p>
       } @else {
-        <div class="row-track" #track>
-          @for (movie of movies(); track movie.id) {
-            <app-movie-card [movie]="movie" />
+        <div class="row-carousel">
+          @if (canScrollLeft()) {
+            <button
+              type="button"
+              class="carousel-arrow left"
+              (click)="scroll(-1)"
+              [attr.aria-label]="'Scroll ' + title() + ' left'"
+            ></button>
+          }
+          <div class="row-track" #track (scroll)="updateArrows()">
+            @for (movie of movies(); track movie.id) {
+              <app-movie-card [movie]="movie" />
+            }
+          </div>
+          @if (canScrollRight()) {
+            <button
+              type="button"
+              class="carousel-arrow right"
+              (click)="scroll(1)"
+              [attr.aria-label]="'Scroll ' + title() + ' right'"
+            ></button>
           }
         </div>
       }
@@ -70,6 +81,10 @@ export class MovieRow {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   private readonly reloadCount = signal(0);
+
+  // Arrows only show when there is more to scroll in that direction.
+  readonly canScrollLeft = signal(false);
+  readonly canScrollRight = signal(false);
 
   private readonly track = viewChild<ElementRef<HTMLElement>>('track');
 
@@ -94,12 +109,21 @@ export class MovieRow {
       .subscribe((movies) => {
         this.movies.set(movies);
         this.loading.set(false);
+        // Wait for the cards to be drawn before measuring the track.
+        setTimeout(() => this.updateArrows());
       });
   }
 
   scroll(direction: 1 | -1): void {
     const el = this.track()?.nativeElement;
     el?.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
+  updateArrows(): void {
+    const el = this.track()?.nativeElement;
+    if (!el) return;
+    this.canScrollLeft.set(el.scrollLeft > 4);
+    this.canScrollRight.set(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
   }
 
   retry(): void {

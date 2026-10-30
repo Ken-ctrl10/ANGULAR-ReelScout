@@ -23,7 +23,14 @@ export interface CardMovie {
   imports: [RouterLink, PosterPipe, DatePipe, DecimalPipe],
   template: `
     <article class="card">
-      <a [routerLink]="['/movie', movie().id]" class="card-link" tabindex="-1" aria-hidden="true">
+      <!-- No visible title: posters already show it. The link still has the title
+           for screen readers (aria-label) and as a hover tooltip (title). -->
+      <a
+        [routerLink]="['/movie', movie().id]"
+        class="card-link"
+        [attr.aria-label]="movie().title"
+        [title]="movie().title"
+      >
         @if (movie().poster_path | poster; as src) {
           <img [src]="src" alt="" loading="lazy" />
         } @else {
@@ -31,7 +38,6 @@ export interface CardMovie {
         }
       </a>
       <div class="card-body">
-        <h3><a [routerLink]="['/movie', movie().id]">{{ movie().title }}</a></h3>
         @if (movie().release_date !== undefined || movie().vote_average !== undefined) {
           <p class="meta">
             <span>{{ movie().release_date ? (movie().release_date | date: 'yyyy') : '—' }}</span>
