@@ -77,6 +77,17 @@ class PersonTest extends TestCase
         $this->assertSame(['Hero', 'Director'], $credits[0]['roles']);
     }
 
+    public function test_writing_credits_are_included(): void
+    {
+        $this->fakePerson([], [
+            $this->credit(20, 'Batman', '1989-06-23', 500, ['job' => 'Characters', 'department' => 'Writing']),
+        ]);
+
+        $this->getJson('/api/people/6193')
+            ->assertJsonPath('credits.0.title', 'Batman')
+            ->assertJsonPath('credits.0.roles', ['Characters']);
+    }
+
     public function test_known_for_is_the_most_voted_movies_with_posters(): void
     {
         $this->fakePerson([

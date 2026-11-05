@@ -48,7 +48,7 @@ class PersonController extends Controller
     }
 
     /**
-     * One entry per movie: acting roles, plus directing jobs (for directors).
+     * One entry per movie: acting roles, plus directing and writing jobs.
      * Newest first; announced movies without a release date go last.
      */
     private function credits(array $movieCredits): array
@@ -59,7 +59,7 @@ class PersonController extends Controller
             array_map(fn ($c) => $c + ['role' => $c['character'] ?? ''], $movieCredits['cast'] ?? []),
             array_map(
                 fn ($c) => $c + ['role' => $c['job'] ?? ''],
-                array_filter($movieCredits['crew'] ?? [], fn ($c) => ($c['department'] ?? '') === 'Directing'),
+                array_filter($movieCredits['crew'] ?? [], fn ($c) => in_array($c['department'] ?? '', ['Directing', 'Writing'], true)),
             ),
         );
 

@@ -299,6 +299,23 @@ app-movie-card { display: block; height: 100%; }
 .cast-link:hover strong { color: var(--accent); }
 .cast span { color: var(--muted); }
 
+/* Movie details: crew and facts */
+.crew {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px 20px;
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.crew li { display: flex; flex-direction: column; font-size: 0.9rem; }
+.crew a { font-weight: 600; text-decoration: underline; text-decoration-color: #4a5168; text-underline-offset: 3px; }
+.crew a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.crew span { color: var(--muted); font-size: 0.85rem; }
+.movie-facts { padding: 14px 16px; background: var(--surface); border-radius: var(--radius); }
+
 /* Actor page */
 .person-header {
   display: grid;

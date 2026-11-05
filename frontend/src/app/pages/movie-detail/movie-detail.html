@@ -45,6 +45,18 @@
       <h2>Overview</h2>
       <p>{{ m.overview || 'No overview available.' }}</p>
 
+      @if (keyCrew().length) {
+        <h2>Crew</h2>
+        <ul class="crew">
+          @for (c of keyCrew(); track c.id) {
+            <li>
+              <a [routerLink]="['/person', c.id]">{{ c.name }}</a>
+              <span>{{ c.jobs.join(', ') }}</span>
+            </li>
+          }
+        </ul>
+      }
+
       @if (trailer(); as video) {
         <h2>Trailer</h2>
         <!-- The YouTube player (and its code) loads only when the user clicks. -->
@@ -79,6 +91,20 @@
           }
         </ul>
       }
+
+      <h2>Details</h2>
+      <dl class="person-facts movie-facts">
+        <div><dt>Status</dt><dd>{{ m.status || 'Unknown' }}</dd></div>
+        <div><dt>Original language</dt><dd>{{ language() ?? 'Unknown' }}</dd></div>
+        <div>
+          <dt>Budget</dt>
+          <dd>{{ m.budget ? (m.budget | currency: 'USD' : 'symbol' : '1.0-0') : 'Not available' }}</dd>
+        </div>
+        <div>
+          <dt>Revenue</dt>
+          <dd>{{ m.revenue ? (m.revenue | currency: 'USD' : 'symbol' : '1.0-0') : 'Not available' }}</dd>
+        </div>
+      </dl>
     </div>
   </article>
 }

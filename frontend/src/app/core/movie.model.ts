@@ -27,6 +27,12 @@ export interface CastMember {
   profile_path: string | null;
 }
 
+export interface CrewMember {
+  id: number;
+  name: string;
+  job: string; // "Director", "Screenplay", "Characters", ...
+}
+
 export interface Video {
   key: string; // YouTube video id
   name: string;
@@ -39,7 +45,11 @@ export interface MovieDetails extends Movie {
   runtime: number | null;
   tagline: string;
   genres: Genre[];
-  credits?: { cast: CastMember[] };
+  status: string; // "Released", "Post Production", ...
+  original_language: string; // language code, e.g. "en"
+  budget: number; // 0 = unknown
+  revenue: number; // 0 = unknown
+  credits?: { cast: CastMember[]; crew?: CrewMember[] };
   videos?: { results: Video[] };
 }
 

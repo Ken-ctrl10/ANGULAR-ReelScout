@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe, Location } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, Location } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -11,9 +11,13 @@ import { FavoriteButton } from '../../shared/favorite-button';
 import { PosterPipe } from '../../shared/poster.pipe';
 import { TrailerPlayer } from '../../shared/trailer-player';
 
+// Crew jobs worth showing, most important first.
+const KEY_JOBS = ['Director', 'Screenplay', 'Writer', 'Story', 'Novel', 'Characters'];
+const MAX_CREW = 6;
+
 @Component({
   selector: 'app-movie-detail',
-  imports: [RouterLink, PosterPipe, FavoriteButton, TrailerPlayer, DatePipe, DecimalPipe],
+  imports: [RouterLink, PosterPipe, FavoriteButton, TrailerPlayer, CurrencyPipe, DatePipe, DecimalPipe],
   templateUrl: './movie-detail.html',
 })
 export class MovieDetail {
@@ -28,6 +32,32 @@ export class MovieDetail {
   readonly error = signal<string | null>(null);
 
   readonly topCast = computed(() => this.movie()?.credits?.cast.slice(0, 8) ?? []);
+
+  // Directors and writers, one entry per person: "Mike Flanagan: Screenplay, Story".
+  readonly keyCrew = computed(() => {
+    const people = new Map<number, { id: number; name: string; jobs: string[] }>();
+    const crew = (this.movie()?.credits?.crew ?? [])
+      .filter((c) => KEY_JOBS.includes(c.job))
+      .sort((a, b) => KEY_JOBS.indexOf(a.job) - KEY_JOBS.indexOf(b.job));
+
+    for (const { id, name, job } of crew) {
+      const person = people.get(id) ?? { id, name, jobs: [] };
+      if (!person.jobs.includes(job)) person.jobs.push(job);
+      people.set(id, person);
+    }
+    return [...people.values()].slice(0, MAX_CREW);
+  });
+
+  // "en" -> "English"
+  readonly language = computed(() => {
+    const code = this.movie()?.original_language;
+    if (!code) return null;
+    try {
+      return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code;
+    } catch {
+      return code;
+    }
+  });
 
   // Best YouTube video: an official trailer, then any trailer, then a teaser.
   readonly trailer = computed(() => {
