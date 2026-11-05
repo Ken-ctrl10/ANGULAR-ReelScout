@@ -276,6 +276,26 @@ app-movie-card { display: block; height: 100%; }
 .detail-info { grid-column: 2; grid-row: 1 / span 2; }
 .detail-side { grid-column: 1; grid-row: 2; }
 .detail-side h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.detail-side ul + h2, .detail-side dl + h2 { margin-top: 18px; }
+.companies { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; }
+.companies li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: #0d253f;
+  background: #e8eaf0; /* light, because many company logos are dark */
+  border-radius: 8px;
+}
+.companies li:last-child:nth-child(odd) { grid-column: 1 / -1; } /* no gap beside an odd last chip */
+.companies img { max-width: 100%; max-height: 36px; object-fit: contain; }
+.movie-links { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
+.movie-links a { display: inline-block; padding: 7px 14px; font-size: 0.9rem; background: var(--surface); border: 1px solid #333949; border-radius: 8px; }
+.movie-links a:hover { color: var(--accent); border-color: var(--accent); }
 .detail-poster { width: 100%; aspect-ratio: 2 / 3; border-radius: var(--radius); object-fit: cover; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5); }
 .detail-info h1 { margin: 0 0 6px; font-size: 2rem; line-height: 1.2; }
 .detail-info h2 { margin: 24px 0 8px; font-size: 1.1rem; }

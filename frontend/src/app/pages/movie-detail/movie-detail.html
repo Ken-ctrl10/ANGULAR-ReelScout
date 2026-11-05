@@ -99,6 +99,9 @@
       <h2 id="details-title">Details</h2>
       <dl class="person-facts movie-facts">
         <div><dt>Status</dt><dd>{{ m.status || 'Unknown' }}</dd></div>
+        @if (ageRating(); as rating) {
+          <div><dt>Age rating</dt><dd>{{ rating }}</dd></div>
+        }
         <div><dt>Original language</dt><dd>{{ language() ?? 'Unknown' }}</dd></div>
         <div>
           <dt>Budget</dt>
@@ -109,6 +112,34 @@
           <dd>{{ m.revenue ? (m.revenue | currency: 'USD' : 'symbol' : '1.0-0') : 'Not available' }}</dd>
         </div>
       </dl>
+
+      @if (companies().length) {
+        <h2>Production</h2>
+        <ul class="companies">
+          @for (c of companies(); track c.id) {
+            <li>
+              <!-- Many logos are dark, so they sit on a light chip -->
+              @if (c.logo_path | poster: 'w154'; as logo) {
+                <img [src]="logo" [alt]="c.name" [title]="c.name" loading="lazy" />
+              } @else {
+                <span>{{ c.name }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (m.homepage || m.imdb_id) {
+        <h2>Links</h2>
+        <ul class="movie-links">
+          @if (m.homepage) {
+            <li><a [href]="m.homepage" target="_blank" rel="noopener">Official site</a></li>
+          }
+          @if (m.imdb_id) {
+            <li><a [href]="'https://www.imdb.com/title/' + m.imdb_id + '/'" target="_blank" rel="noopener">IMDb</a></li>
+          }
+        </ul>
+      }
     </section>
   </article>
 }

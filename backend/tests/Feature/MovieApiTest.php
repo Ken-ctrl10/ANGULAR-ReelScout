@@ -94,7 +94,7 @@ class MovieApiTest extends TestCase
 
         $this->getJson('/api/movies/27205')->assertOk()->assertJsonPath('title', 'Inception');
 
-        Http::assertSent(fn (Request $request) => str_contains(urldecode($request->url()), 'append_to_response=credits,videos'));
+        Http::assertSent(fn (Request $request) => str_contains(urldecode($request->url()), 'append_to_response=credits,videos,release_dates'));
     }
 
     public function test_tmdb_errors_become_clean_messages(): void

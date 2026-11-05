@@ -14,6 +14,8 @@ import { TrailerPlayer } from '../../shared/trailer-player';
 // Crew jobs worth showing, most important first.
 const KEY_JOBS = ['Director', 'Screenplay', 'Writer', 'Story', 'Novel', 'Characters'];
 const MAX_CREW = 6;
+const MAX_COMPANIES = 4;
+const RATING_COUNTRIES = ['PH', 'US'];
 
 @Component({
   selector: 'app-movie-detail',
@@ -47,6 +49,19 @@ export class MovieDetail {
     }
     return [...people.values()].slice(0, MAX_CREW);
   });
+
+  // Philippines rating if TMDB has one, otherwise the US rating: "PG-13 (US)".
+  readonly ageRating = computed(() => {
+    const countries = this.movie()?.release_dates?.results ?? [];
+    for (const code of RATING_COUNTRIES) {
+      const dates = countries.find((c) => c.iso_3166_1 === code)?.release_dates ?? [];
+      const rating = dates.find((d) => d.certification)?.certification;
+      if (rating) return `${rating} (${code})`;
+    }
+    return null;
+  });
+
+  readonly companies = computed(() => (this.movie()?.production_companies ?? []).slice(0, MAX_COMPANIES));
 
   // "en" -> "English"
   readonly language = computed(() => {

@@ -92,9 +92,9 @@ class TmdbService
 
     public function details(int $id): array
     {
-        // "full" = includes credits and videos (older cache entries had credits only).
-        return Cache::remember("tmdb.movie.full.$id", now()->addHours(6), fn () =>
-            $this->get("/movie/$id", ['append_to_response' => 'credits,videos'])
+        // Change the "v2" when the appended data changes, so old cache entries aren't reused.
+        return Cache::remember("tmdb.movie.v2.$id", now()->addHours(6), fn () =>
+            $this->get("/movie/$id", ['append_to_response' => 'credits,videos,release_dates'])
         );
     }
 

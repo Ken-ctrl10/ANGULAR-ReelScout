@@ -33,6 +33,18 @@ export interface CrewMember {
   job: string; // "Director", "Screenplay", "Characters", ...
 }
 
+export interface ProductionCompany {
+  id: number;
+  name: string;
+  logo_path: string | null;
+}
+
+// Release info per country. "certification" is the age rating (may be empty).
+export interface CountryRelease {
+  iso_3166_1: string; // country code, e.g. "PH", "US"
+  release_dates: { certification: string }[];
+}
+
 export interface Video {
   key: string; // YouTube video id
   name: string;
@@ -49,6 +61,10 @@ export interface MovieDetails extends Movie {
   original_language: string; // language code, e.g. "en"
   budget: number; // 0 = unknown
   revenue: number; // 0 = unknown
+  homepage: string; // official site, may be empty
+  imdb_id: string | null;
+  production_companies: ProductionCompany[];
+  release_dates?: { results: CountryRelease[] };
   credits?: { cast: CastMember[]; crew?: CrewMember[] };
   videos?: { results: Video[] };
 }
