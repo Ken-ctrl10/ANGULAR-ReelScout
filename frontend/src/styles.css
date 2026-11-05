@@ -441,9 +441,9 @@ main:focus { outline: none; }
   }
   .site-menu.open { display: flex; }
   .main-nav { flex-direction: column; align-items: stretch; gap: 0; margin: 0; font-size: 1rem; }
-  .main-nav a { padding: 12px 0; }
+  .main-nav a { padding: 12px 0; text-align: center; }
   .main-nav a.active-link { color: var(--accent); box-shadow: none; padding-bottom: 12px; }
-  .header-nav { flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 8px; padding-top: 14px; border-top: 1px solid #222631; font-size: 1rem; }
+  .header-nav { flex-wrap: wrap; justify-content: center; gap: 12px 20px; margin-top: 8px; padding-top: 14px; border-top: 1px solid #222631; font-size: 1rem; }
   .greeting { max-width: 60vw; }
 }
 
