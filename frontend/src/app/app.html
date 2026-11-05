@@ -1,29 +1,45 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
 
 <header class="site-header">
-  <a routerLink="/" class="brand">Reel<span>Scout</span></a>
+  <a routerLink="/" class="brand" (click)="menuOpen.set(false)">Reel<span>Scout</span></a>
 
-  <nav class="main-nav" aria-label="Main">
-    <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-    <a routerLink="/browse" routerLinkActive="active-link">Browse</a>
-    @if (auth.isLoggedIn()) {
-      <a routerLink="/favorites" routerLinkActive="active-link">
-        My list
-        @if (favorites.count()) {
-          <span class="badge" [attr.aria-label]="favorites.count() + ' movies'">{{ favorites.count() }}</span>
-        }
-      </a>
-    }
-  </nav>
+  <!-- Only visible on phones and tablets -->
+  <button
+    type="button"
+    class="menu-toggle"
+    [class.open]="menuOpen()"
+    aria-controls="site-menu"
+    [attr.aria-expanded]="menuOpen()"
+    [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+    (click)="menuOpen.set(!menuOpen())"
+  >
+    <span></span>
+  </button>
 
-  <div class="header-nav">
-    @if (auth.user(); as user) {
-      <span class="greeting">Hi, {{ user.name }}</span>
-      <button type="button" class="link-button" (click)="logout()">Log out</button>
-    } @else {
-      <a routerLink="/login">Log in</a>
-      <a routerLink="/register" class="nav-cta">Sign up</a>
-    }
+  <!-- A click on any link or button inside closes the menu -->
+  <div id="site-menu" class="site-menu" [class.open]="menuOpen()" (click)="menuOpen.set(false)">
+    <nav class="main-nav" aria-label="Main">
+      <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/browse" routerLinkActive="active-link">Browse</a>
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/favorites" routerLinkActive="active-link">
+          My list
+          @if (favorites.count()) {
+            <span class="badge" [attr.aria-label]="favorites.count() + ' movies'">{{ favorites.count() }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="header-nav">
+      @if (auth.user(); as user) {
+        <span class="greeting">Hi, {{ user.name }}</span>
+        <button type="button" class="link-button" (click)="logout()">Log out</button>
+      } @else {
+        <a routerLink="/login">Log in</a>
+        <a routerLink="/register" class="nav-cta">Sign up</a>
+      }
+    </div>
   </div>
 </header>
 
