@@ -92,7 +92,11 @@
         </ul>
       }
 
-      <h2>Details</h2>
+    </div>
+
+    <!-- After the info in the HTML (phones show it last); CSS puts it under the poster on wider screens. -->
+    <section class="detail-side" aria-labelledby="details-title">
+      <h2 id="details-title">Details</h2>
       <dl class="person-facts movie-facts">
         <div><dt>Status</dt><dd>{{ m.status || 'Unknown' }}</dd></div>
         <div><dt>Original language</dt><dd>{{ language() ?? 'Unknown' }}</dd></div>
@@ -105,6 +109,6 @@
           <dd>{{ m.revenue ? (m.revenue | currency: 'USD' : 'symbol' : '1.0-0') : 'Not available' }}</dd>
         </div>
       </dl>
-    </div>
+    </section>
   </article>
 }

@@ -272,9 +272,15 @@ app-movie-card { display: block; height: 100%; }
   position: relative;
   display: grid;
   grid-template-columns: minmax(200px, 300px) 1fr;
-  gap: 32px;
+  grid-template-rows: auto 1fr;
+  gap: 20px 32px;
   align-items: start;
 }
+/* Left column: poster with the details under it. Right column: everything else. */
+.detail-poster { grid-column: 1; grid-row: 1; }
+.detail-info { grid-column: 2; grid-row: 1 / span 2; }
+.detail-side { grid-column: 1; grid-row: 2; }
+.detail-side h2 { margin: 0 0 8px; font-size: 1.1rem; }
 .detail-poster { width: 100%; aspect-ratio: 2 / 3; border-radius: var(--radius); object-fit: cover; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5); }
 .detail-info h1 { margin: 0 0 6px; font-size: 2rem; line-height: 1.2; }
 .detail-info h2 { margin: 24px 0 8px; font-size: 1.1rem; }
@@ -290,8 +296,11 @@ app-movie-card { display: block; height: 100%; }
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr)); /* 8 actors = 2 full rows */
   gap: 10px;
+}
+@media (max-width: 1023px) {
+  .cast { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .cast li { display: flex; flex-direction: column; background: var(--surface); border-radius: 8px; font-size: 0.85rem; transition: transform 0.15s; }
 .cast li:hover { transform: translateY(-3px); }
@@ -314,7 +323,7 @@ app-movie-card { display: block; height: 100%; }
 .crew a { font-weight: 600; text-decoration: underline; text-decoration-color: #4a5168; text-underline-offset: 3px; }
 .crew a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 .crew span { color: var(--muted); font-size: 0.85rem; }
-.movie-facts { padding: 14px 16px; background: var(--surface); border-radius: var(--radius); }
+.movie-facts { grid-template-columns: 1fr; padding: 14px 16px; background: var(--surface); border-radius: var(--radius); }
 
 /* Actor page */
 .person-header {
@@ -594,7 +603,8 @@ main:focus { outline: none; }
 
 @media (max-width: 640px) {
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .detail { grid-template-columns: 1fr; gap: 20px; }
+  .detail { grid-template-columns: 1fr; grid-template-rows: none; gap: 20px; }
+  .detail-poster, .detail-info, .detail-side { grid-column: 1; grid-row: auto; }
   .detail-poster { max-width: 240px; margin: 0 auto; }
   .detail-info h1 { font-size: 1.5rem; }
   .person-header { grid-template-columns: 1fr; gap: 20px; }
